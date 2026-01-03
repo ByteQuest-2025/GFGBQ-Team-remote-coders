@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import { useRef } from "react";
 import { useAuth } from "../context/AuthContext";
+import {useState } from "react";
 
 const Landing = () => {
   const navigate = useNavigate();
