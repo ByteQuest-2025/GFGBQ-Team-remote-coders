@@ -2,7 +2,9 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
   {
-    // EXISTING FIELDS (UNCHANGED)
+    // =====================
+    // AUTH FIELDS
+    // =====================
     name: {
       type: String,
       required: true,
@@ -25,7 +27,9 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
 
-    // 🔹 BLOCK 1: CONTEXT DATA (NEW)
+    // =====================
+    // PROFILE CONTEXT (BLOCK 1)
+    // =====================
     profileContext: {
       age: {
         type: Number,
@@ -43,6 +47,28 @@ const userSchema = new mongoose.Schema(
       workMode: {
         type: String,
         enum: ["wfh", "onsite", "hybrid"],
+      },
+
+      // =====================
+      // RECENT MEDICAL ISSUES
+      // =====================
+      recentMedicalIssues: {
+        frequentHeadaches: {
+          type: Boolean,
+          default: false,
+        },
+        persistentFatigue: {
+          type: Boolean,
+          default: false,
+        },
+        suddenWeightChanges: {
+          type: Boolean,
+          default: false,
+        },
+        digestiveDiscomfort: {
+          type: Boolean,
+          default: false,
+        },
       },
     },
   },
