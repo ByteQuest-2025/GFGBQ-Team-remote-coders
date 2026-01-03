@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import { useRef,useState } from "react"; // use state is not pulled i need to 
 import { useAuth } from "../context/AuthContext";
+import {useState } from "react";
 
 const Landing = () => {
   const navigate = useNavigate();
