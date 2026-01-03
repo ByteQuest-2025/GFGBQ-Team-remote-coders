@@ -4,20 +4,25 @@ import medicalAnimation from "../assets/Medical-Healthcare.json";
 import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import { useRef } from "react";
+import { useAuth } from "../context/AuthContext";
 
 const Landing = () => {
   const navigate = useNavigate();
   const howItWorksRef = useRef(null);
 
+  const { isLoggedIn, logout } = useAuth();
+
   const scrollToHowItWorks = () => {
-    howItWorksRef.current?.scrollIntoView({ behavior: 'smooth' });
+    howItWorksRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
     <div className="landing">
       {/* NAVBAR */}
       <nav className="navbar">
-        <div className="logo">SilentSense<span>AI</span></div>
+        <div className="logo">
+          SilentSense<span>AI</span>
+        </div>
 
         <ul className="nav-links">
           <li>Home</li>
@@ -28,23 +33,43 @@ const Landing = () => {
         </ul>
 
         <div className="nav-actions">
-          <button
-            className="nav-login-btn"
-            onClick={() => navigate("/login")}
-          >
-            Login
-          </button>
+          {!isLoggedIn ? (
+            <>
+              <button
+                className="nav-login-btn"
+                onClick={() => navigate("/login")}
+              >
+                Login
+              </button>
 
-          <button
-            className="nav-signup-btn"
-            onClick={() => navigate("/signup")}
-          >
-            Signup
-          </button>
+              <button
+                className="nav-signup-btn"
+                onClick={() => navigate("/signup")}
+              >
+                Signup
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                className="nav-login-btn"
+                onClick={() => navigate("/tellme")}
+              >
+                Dashboard
+              </button>
+
+              <button
+                className="nav-signup-btn"
+                onClick={logout}
+              >
+                Logout
+              </button>
+            </>
+          )}
         </div>
       </nav>
 
-      {/* HERO (FULL SCREEN) */}
+      {/* HERO */}
       <section className="hero hero-full">
         <div className="hero-content">
           {/* LEFT */}
@@ -67,9 +92,13 @@ const Landing = () => {
             <div className="hero-actions">
               <button
                 className="primary-btn"
-                onClick={() => navigate("/tellme")}
+                onClick={() =>
+                  isLoggedIn
+                    ? navigate("/tellme")
+                    : navigate("/login")
+                }
               >
-                Explore Platform
+                {isLoggedIn ? "Go to Dashboard" : "Explore Platform"}
               </button>
 
               <button
@@ -216,38 +245,6 @@ const Landing = () => {
                 Provides early guidance for patients
                 and clinical insights for doctors.
               </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* WHY SILENTSENSE AI */}
-      <section className="why-us">
-        <div className="why-us-container">
-          <h2>Why SilentSenseAI?</h2>
-          <p>
-            Healthcare today reacts late. SilentSenseAI shifts
-            the system left — toward anticipation, prevention,
-            and early intervention when outcomes can be changed.
-          </p>
-
-          <div className="why-features">
-            <div className="why-feature">
-              <div className="feature-icon">⏱️</div>
-              <h3>Early Detection</h3>
-              <p>Identifies risks years before symptoms appear</p>
-            </div>
-
-            <div className="why-feature">
-              <div className="feature-icon">🔒</div>
-              <h3>Data Privacy</h3>
-              <p>HIPAA-compliant security for your health data</p>
-            </div>
-
-            <div className="why-feature">
-              <div className="feature-icon">👨⚕️</div>
-              <h3>Doctor Approved</h3>
-              <p>Built with medical professionals, for medical professionals</p>
             </div>
           </div>
         </div>

@@ -1,13 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import "../styles/tellme.css";
+import { useAuth } from "../context/AuthContext";
 
 export default function TellMe() {
   const navigate = useNavigate();
+  const { isLoggedIn, loading } = useAuth();
   const [activeCard, setActiveCard] = useState(null);
   const [completedCards, setCompletedCards] = useState([]);
   const [showResult, setShowResult] = useState(false);
+
+  useEffect(() => {
+    if (!loading && !isLoggedIn) {
+      navigate("/login");
+    }
+  }, [isLoggedIn, loading, navigate]);
+
+  if (loading) return <div>Loading...</div>;
 
   // Form data state
   const [formData, setFormData] = useState({
