@@ -129,7 +129,7 @@
 
   border-radius: 8px;
   border: 1px solid rgba(0, 0, 0, 0.15);
-
+  color : black;
   font-size: 14px;
   background: rgba(255, 255, 255, 0.9);
 }
@@ -152,7 +152,7 @@
     #4fd1c5
   );
 
-  color: white;
+  color: rgb(0, 0, 0);
   border: none;
   border-radius: 10px;
 

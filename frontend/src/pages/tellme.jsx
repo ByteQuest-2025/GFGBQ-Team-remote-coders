@@ -1,137 +1,409 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Footer from "../components/Footer";
 import "../styles/tellme.css";
 
-export default function Tellme() {
-  const [age, setAge] = useState("");
-  const [hours, setHours] = useState(8);
-  const [workMode, setWorkMode] = useState("work_from_home");
-  const [role, setRole] = useState("student");
-  const [otherRole, setOtherRole] = useState("");
-  const [submitted, setSubmitted] = useState(null);
+export default function TellMe() {
+  const navigate = useNavigate();
+  const [activeCard, setActiveCard] = useState(null);
+  const [completedCards, setCompletedCards] = useState([]);
+  const [showResult, setShowResult] = useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const roleValue = role === "other" ? otherRole : role;
-    setSubmitted({ age, hours, workMode, role: roleValue });
+  // Form data state
+  const [formData, setFormData] = useState({
+    about: {
+      age: "",
+      workingHours: "",
+      role: "",
+      workMode: "",
+      medicalIssues: []
+    },
+    mental: {
+      q1: "",
+      q2: "",
+      q3: "",
+      q4: "",
+      q5: "",
+      q6: "",
+      q7: "",
+      q8: "",
+      q9: ""
+    },
+    sleepFamily: {
+      averageSleepHours: "",
+      sleepConsistency: "",
+      screenTimeBeforeSleepMinutes: "",
+      sleepQuality: "",
+      familyHistory: {
+        diabetes: false,
+        hypertension: false,
+        heartDisease: false,
+        mentalHealthConditions: false
+      }
+    }
+  });
+
+  const handleInputChange = (card, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [card]: {
+        ...prev[card],
+        [field]: value
+      }
+    }));
   };
 
+  const handleNestedInputChange = (card, parentField, childField, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [card]: {
+        ...prev[card],
+        [parentField]: {
+          ...prev[card][parentField],
+          [childField]: value
+        }
+      }
+    }));
+  };
+
+  const handleArrayInputChange = (card, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [card]: {
+        ...prev[card],
+        [field]: prev[card][field].includes(value)
+          ? prev[card][field].filter(item => item !== value)
+          : [...prev[card][field], value]
+      }
+    }));
+  };
+
+  const handleSubmit = (card) => {
+    // Simulate API call
+    console.log(`Submitting ${card} data:`, formData[card]);
+
+    // Mark card as completed
+    setCompletedCards(prev => [...prev, card]);
+    setActiveCard(null);
+
+    // If all cards are completed, show result
+    if (completedCards.length === 2) {
+      setShowResult(true);
+    }
+  };
+
+  const phq9Questions = [
+    "Little interest or pleasure in doing things",
+    "Feeling down, depressed, or hopeless",
+    "Trouble falling or staying asleep, or sleeping too much",
+    "Feeling tired or having little energy",
+    "Poor appetite or overeating",
+    "Feeling bad about yourself - or that you are a failure or have let yourself or your family down",
+    "Trouble concentrating on things, such as reading the newspaper or watching television",
+    "Moving or speaking so slowly that other people could have noticed. Or the opposite - being so fidgety or restless that you have been moving around a lot more than usual",
+    "Thoughts that you would be better off dead, or of hurting yourself in some way"
+  ];
+
   return (
-    <div className="tellme-page">
-      <div className="tellme-container">
-        <center><h2 className="tellme-title">User Work Information</h2></center>
+    <>
+      <div className="tellme-page">
+        {/* TOP BAR */}
+        <div className="tellme-top">
+          <button onClick={() => navigate("/")}>← Back</button>
+        </div>
 
-        <form onSubmit={handleSubmit} className="tellme-form">
-          <label className="tt-label">
-            Age:
-            <input
-              type="number"
-              min={0}
-              value={age}
-              onChange={(e) => setAge(e.target.value)}
-              required
-              className="tt-input"
-            />
-          </label>
+        {/* HERO */}
+        <div className="tellme-hero">
+          <h1>Understand Your Health Signals</h1>
+          <p>
+            Answer a few simple questions. SilentSenseAI connects the dots
+            to detect early health risks.
+          </p>
+        </div>
 
-          <label>
-            Working hours per day:
-            <input
-              type="number"
-              min={0}
-              max={24}
-              value={hours}
-              onChange={(e) => setHours(e.target.value)}
-              required
-              className="tt-input"
-            />
-          </label>
-
-          <fieldset className="tt-fieldset">
-            <legend>Work mode:</legend>
-            <label style={{ marginRight: 12 }}>
-              <input
-                type="radio"
-                name="workMode"
-                value="work_from_home"
-                checked={workMode === "work_from_home"}
-                onChange={() => setWorkMode("work_from_home")}
-              />
-              Work from home
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="workMode"
-                value="on_site"
-                checked={workMode === "on_site"}
-                onChange={() => setWorkMode("on_site")}
-              />
-              On site
-            </label>
-          </fieldset>
-
-          <fieldset className="tt-fieldset">
-            <legend>Role:</legend>
-            <label style={{ marginRight: 12 }}>
-              <input
-                type="radio"
-                name="role"
-                value="student"
-                checked={role === "student"}
-                onChange={() => setRole("student")}
-              />
-              Student
-            </label>
-            <label style={{ marginRight: 12 }}>
-              <input
-                type="radio"
-                name="role"
-                value="working"
-                checked={role === "working"}
-                onChange={() => setRole("working")}
-              />
-              Working
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="role"
-                value="other"
-                checked={role === "other"}
-                onChange={() => setRole("other")}
-              />
-              Other
-            </label>
-
-            {role === "other" && (
-              <div className="tt-other">
-                <label className="tt-label">
-                  Please describe:
-                  <input
-                    type="text"
-                    value={otherRole}
-                    onChange={(e) => setOtherRole(e.target.value)}
-                    required
-                    className="tt-input tt-input-wide"
-                    placeholder="E.g., freelancer, researcher, etc."
-                  />
-                </label>
-              </div>
-            )}
-          </fieldset>
-
-          <div className="tt-submit">
-            <button type="submit">Submit</button>
+        {/* CARDS CONTAINER */}
+        <div className="cards-container">
+          {/* Card 1: About You & Medical Issues */}
+          <div
+            className={`card ${completedCards.includes('about') ? 'completed' : ''}`}
+            onClick={() => !completedCards.includes('about') && setActiveCard('about')}
+          >
+            <div className="card-header">
+              <h3>About You & Medical Issues</h3>
+              {completedCards.includes('about') && <span className="completed-badge">✓ Completed</span>}
+            </div>
+            <p>Basic information and recent health concerns</p>
           </div>
-        </form>
 
-        {submitted && (
-          <div className="tt-submitted">
-            <h3>Submitted</h3>
-            <pre>{JSON.stringify(submitted, null, 2)}</pre>
+          {/* Card 2: Mental Health (PHQ-9) */}
+          <div
+            className={`card ${completedCards.includes('mental') ? 'completed' : ''}`}
+            onClick={() => !completedCards.includes('mental') && setActiveCard('mental')}
+          >
+            <div className="card-header">
+              <h3>Mental Health Assessment</h3>
+              {completedCards.includes('mental') && <span className="completed-badge">✓ Completed</span>}
+            </div>
+            <p>PHQ-9 questionnaire to evaluate your mental well-being</p>
+          </div>
+
+          {/* Card 3: Sleep & Family History */}
+          <div
+            className={`card ${completedCards.includes('sleepFamily') ? 'completed' : ''}`}
+            onClick={() => !completedCards.includes('sleepFamily') && setActiveCard('sleepFamily')}
+          >
+            <div className="card-header">
+              <h3>Sleep & Family History</h3>
+              {completedCards.includes('sleepFamily') && <span className="completed-badge">✓ Completed</span>}
+            </div>
+            <p>Sleep patterns and family medical background</p>
+          </div>
+        </div>
+
+        {/* MODAL FOR CARD 1: About You & Medical Issues */}
+        {activeCard === 'about' && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h2>About You & Medical Issues</h2>
+                <button className="close-btn" onClick={() => setActiveCard(null)}>×</button>
+              </div>
+
+              <div className="form-grid">
+                <div className="form-group">
+                  <label>Age</label>
+                  <input
+                    type="number"
+                    min="1"
+                    placeholder="Enter your age"
+                    value={formData.about.age}
+                    onChange={(e) => handleInputChange('about', 'age', e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Working hours per day</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="24"
+                    placeholder="Hours"
+                    value={formData.about.workingHours}
+                    onChange={(e) => handleInputChange('about', 'workingHours', e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>You are a</label>
+                  <select
+                    value={formData.about.role}
+                    onChange={(e) => handleInputChange('about', 'role', e.target.value)}
+                  >
+                    <option value="">Select your role</option>
+                    <option value="student">Student</option>
+                    <option value="job">Working Professional</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>Work mode</label>
+                  <select
+                    value={formData.about.workMode}
+                    onChange={(e) => handleInputChange('about', 'workMode', e.target.value)}
+                  >
+                    <option value="">Select work mode</option>
+                    <option value="wfh">Work from home</option>
+                    <option value="onsite">On-site</option>
+                    <option value="hybrid">Hybrid</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="checkbox-group">
+                <h4>Recent Medical Issues</h4>
+                {["Frequent headaches", "Persistent fatigue", "Sudden weight changes", "Digestive discomfort"].map((issue) => (
+                  <label key={issue} className="checkbox">
+                    <input
+                      type="checkbox"
+                      checked={formData.about.medicalIssues.includes(issue)}
+                      onChange={() => handleArrayInputChange('about', 'medicalIssues', issue)}
+                    />
+                    <span className="checkmark"></span>
+                    {issue}
+                  </label>
+                ))}
+              </div>
+
+              <div className="modal-actions">
+                <button className="secondary" onClick={() => setActiveCard(null)}>Cancel</button>
+                <button className="primary" onClick={() => handleSubmit('about')}>Submit</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* MODAL FOR CARD 2: Mental Health (PHQ-9) */}
+        {activeCard === 'mental' && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h2>Mental Health Assessment (PHQ-9)</h2>
+                <button className="close-btn" onClick={() => setActiveCard(null)}>×</button>
+              </div>
+
+              <p className="modal-description">
+                Over the last 2 weeks, how often have you been bothered by any of the following problems?
+              </p>
+
+              <div className="phq9-questions">
+                {phq9Questions.map((question, index) => (
+                  <div key={index} className="phq9-question">
+                    <p>{index + 1}. {question}</p>
+                    <div className="phq9-options">
+                      {['Not at all', 'Several days', 'More than half the days', 'Nearly every day'].map((option, optIndex) => (
+                        <label key={optIndex} className="radio-option">
+                          <input
+                            type="radio"
+                            name={`q${index + 1}`}
+                            value={optIndex + 1}
+                            checked={formData.mental[`q${index + 1}`] === String(optIndex + 1)}
+                            onChange={(e) => handleInputChange('mental', `q${index + 1}`, e.target.value)}
+                          />
+                          <span className="radio-mark"></span>
+                          {option}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="modal-actions">
+                <button className="secondary" onClick={() => setActiveCard(null)}>Cancel</button>
+                <button className="primary" onClick={() => handleSubmit('mental')}>Submit</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* MODAL FOR CARD 3: Sleep & Family History */}
+        {activeCard === 'sleepFamily' && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h2>Sleep & Family History</h2>
+                <button className="close-btn" onClick={() => setActiveCard(null)}>×</button>
+              </div>
+
+              <div className="form-grid">
+                <div className="form-group">
+                  <label>Average sleep hours</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="24"
+                    placeholder="Hours"
+                    value={formData.sleepFamily.averageSleepHours}
+                    onChange={(e) => handleInputChange('sleepFamily', 'averageSleepHours', e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Sleep consistency</label>
+                  <select
+                    value={formData.sleepFamily.sleepConsistency}
+                    onChange={(e) => handleInputChange('sleepFamily', 'sleepConsistency', e.target.value)}
+                  >
+                    <option value="">Select consistency</option>
+                    <option value="consistent">Consistent</option>
+                    <option value="irregular">Irregular</option>
+                    <option value="highly_irregular">Highly irregular</option>
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>Screen time before sleep (minutes)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="Minutes"
+                    value={formData.sleepFamily.screenTimeBeforeSleepMinutes}
+                    onChange={(e) => handleInputChange('sleepFamily', 'screenTimeBeforeSleepMinutes', e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Sleep quality</label>
+                  <select
+                    value={formData.sleepFamily.sleepQuality}
+                    onChange={(e) => handleInputChange('sleepFamily', 'sleepQuality', e.target.value)}
+                  >
+                    <option value="">Select quality</option>
+                    <option value="good">Good</option>
+                    <option value="average">Average</option>
+                    <option value="poor">Poor</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="checkbox-group">
+                <h4>Family Medical History</h4>
+                {Object.keys(formData.sleepFamily.familyHistory).map((condition) => (
+                  <label key={condition} className="checkbox">
+                    <input
+                      type="checkbox"
+                      checked={formData.sleepFamily.familyHistory[condition]}
+                      onChange={(e) => handleNestedInputChange('sleepFamily', 'familyHistory', condition, e.target.checked)}
+                    />
+                    <span className="checkmark"></span>
+                    {condition.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                  </label>
+                ))}
+              </div>
+
+              <div className="modal-actions">
+                <button className="secondary" onClick={() => setActiveCard(null)}>Cancel</button>
+                <button className="primary" onClick={() => handleSubmit('sleepFamily')}>Submit</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* RESULT SECTION */}
+        {showResult && (
+          <div className="result-section">
+            <h2>Your Health Assessment Results</h2>
+            <div className="result-content">
+              <div className="result-card">
+                <h3>Overall Health Score</h3>
+                <div className="score-circle">85%</div>
+                <p>Your overall health is good. Keep maintaining your current lifestyle.</p>
+              </div>
+
+              <div className="result-card">
+                <h3>Key Findings</h3>
+                <ul>
+                  <li>Your sleep patterns are generally healthy</li>
+                  <li>Mild indicators of stress detected</li>
+                  <li>No significant family history risks identified</li>
+                </ul>
+              </div>
+
+              <div className="result-card">
+                <h3>Recommendations</h3>
+                <ul>
+                  <li>Maintain your current sleep schedule</li>
+                  <li>Consider stress management techniques</li>
+                  <li>Regular check-ups recommended</li>
+                </ul>
+              </div>
+            </div>
           </div>
         )}
       </div>
-    </div>
+
+      <Footer />
+    </>
   );
 }
