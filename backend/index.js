@@ -5,28 +5,38 @@ require("dotenv").config();
 
 const app = express();
 
-// ✅ ENABLE CORS (IMPORTANT)
+// ✅ ENABLE CORS
 app.use(cors());
 
-// body parser
+// ✅ BODY PARSER
 app.use(express.json());
 
-// MongoDB connection
+// ✅ MONGODB CONNECTION
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.log(err));
 
-// test route
+// ✅ TEST ROUTE
 app.get("/", (req, res) => {
   res.send("Backend + DB connected");
 });
 
-// auth routes
+// ===============================
+// ROUTES
+// ===============================
+
+// 🔐 Auth routes
 const authRoutes = require("./routes/authRoutes");
 app.use("/api/auth", authRoutes);
 
-// server start
+// 🧠 Profile / Context routes (BLOCK 1)
+const profileRoutes = require("./routes/profileRoutes");
+app.use("/api", profileRoutes);
+
+// ===============================
+// SERVER START
+// ===============================
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

@@ -54,6 +54,9 @@ router.post("/signup", async (req, res) => {
   }
 });
 
+
+
+
 // ======================
 // LOGIN (EMAIL + PASSWORD → SEND OTP)
 // ======================
@@ -137,10 +140,21 @@ router.post("/verify-otp", async (req, res) => {
       return res.status(400).json({ message: "Invalid OTP" });
     }
 
+    // ✅ OTP valid → delete
     await Otp.deleteOne({ email });
 
+    // ✅ FETCH USER (CRITICAL)
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
+    // ✅ CREATE JWT WITH USER ID
     const token = jwt.sign(
-      { email },
+      {
+        id: user._id,
+        email: user.email
+      },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
@@ -154,5 +168,6 @@ router.post("/verify-otp", async (req, res) => {
     res.status(500).json({ message: "OTP verification failed" });
   }
 });
+
 
 module.exports = router;
