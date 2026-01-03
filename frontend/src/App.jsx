@@ -3,6 +3,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import Landing from "./pages/Landing";
+import Tellme from "./pages/tellme";
 
 export default function App() {
   return (
@@ -12,6 +13,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/tellme" element={<Tellme />} />
       </Routes>
     </BrowserRouter>
   );
