@@ -8,6 +8,8 @@ export default function TellMe() {
   const [activeCard, setActiveCard] = useState(null);
   const [completedCards, setCompletedCards] = useState([]);
   const [showResult, setShowResult] = useState(false);
+  const TOTAL_CARDS = 3;
+
 
   // Form data state
   const [formData, setFormData] = useState({
@@ -78,12 +80,33 @@ export default function TellMe() {
     }));
   };
 
-  const handleSubmit = (card) => {
-    // Simulate API call
-    console.log(`Submitting ${card} data:`, formData[card]);
+  const handleSubmit = async (card) => {
+    let success = true;
 
-    // Mark card as completed
-    setCompletedCards(prev => [...prev, card]);
+    if (card === "about") {
+      success = await submitProfileContext();
+    }
+
+    if (card === "mental") {
+      success = await submitPHQ9();
+    }
+
+    if (card === "sleepFamily") {
+      success = await submitSleepFamily();
+    }
+
+    if (!success) return;
+
+    setCompletedCards(prev => {
+      const updated = [...new Set([...prev, card])];
+
+      if (updated.length === TOTAL_CARDS) {
+        setShowResult(true);
+      }
+
+      return updated;
+    });
+
     setActiveCard(null);
 
     // If all cards are completed, show result
@@ -91,6 +114,10 @@ export default function TellMe() {
       setShowResult(true);
     }
   };
+
+
+
+
 
   const phq9Questions = [
     "Little interest or pleasure in doing things",
@@ -103,6 +130,182 @@ export default function TellMe() {
     "Moving or speaking so slowly that other people could have noticed. Or the opposite - being so fidgety or restless that you have been moving around a lot more than usual",
     "Thoughts that you would be better off dead, or of hurting yourself in some way"
   ];
+
+
+  // -------------pm Backend------------------------
+
+  const submitProfileContext = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        alert("Please login again");
+        return;
+      }
+
+      // 🔁 Convert checkbox array → backend boolean object
+      const recentMedicalIssues = {
+        frequentHeadaches: formData.about.medicalIssues.includes("Frequent headaches"),
+        persistentFatigue: formData.about.medicalIssues.includes("Persistent fatigue"),
+        suddenWeightChanges: formData.about.medicalIssues.includes("Sudden weight changes"),
+        digestiveDiscomfort: formData.about.medicalIssues.includes("Digestive discomfort"),
+      };
+
+      // 🎯 Final payload (MATCHES BACKEND EXACTLY)
+      const payload = {
+        age: Number(formData.about.age),
+        occupationType: formData.about.role,
+        workingHoursPerDay: Number(formData.about.workingHours),
+        workMode: formData.about.workMode,
+        recentMedicalIssues,
+      };
+
+      const response = await fetch(
+        "http://localhost:5000/api/profile/context",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message || "Something went wrong");
+        return;
+      }
+
+      console.log("Profile context saved:", data);
+      alert("Profile information saved successfully ✅");
+
+      setActiveCard(null); // close modal
+    } catch (error) {
+      console.error("Profile context error:", error);
+      alert("Server error");
+    }
+  };
+
+
+  // -------------------------vedant backend------------------
+
+  const submitPHQ9 = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Please login again");
+        return false;
+      }
+
+      // 🔁 Convert frontend answers → backend format (0–3)
+      const answers = {};
+      for (let i = 1; i <= 9; i++) {
+        const value = formData.mental[`q${i}`];
+        if (!value) {
+          alert("Please answer all questions");
+          return false;
+        }
+        answers[`q${i}`] = Number(value) - 1;
+      }
+
+      const response = await fetch("http://localhost:5000/api/stress/phq9", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ answers }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message || "PHQ-9 submission failed");
+        return false;
+      }
+
+      console.log("PHQ-9 saved:", data);
+      alert(`PHQ-9 submitted (${data.severity})`);
+
+      return true; // ✅ important
+    } catch (error) {
+      console.error("PHQ-9 error:", error);
+      alert("Server error");
+      return false;
+    }
+  };
+
+  // ----------------------------vedant second Api ------------------
+  const submitSleepFamily = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Please login again");
+        return false;
+      }
+
+      // 🎯 Build backend payload
+      const payload = {
+        sleep: {
+          average_sleep_hours: Number(formData.sleepFamily.averageSleepHours),
+          sleep_consistency: formData.sleepFamily.sleepConsistency,
+          screen_time_before_sleep_minutes: Number(
+            formData.sleepFamily.screenTimeBeforeSleepMinutes
+          ) || 0,
+          sleep_quality: formData.sleepFamily.sleepQuality
+        },
+        family_history: {
+          diabetes: formData.sleepFamily.familyHistory.diabetes,
+          hypertension: formData.sleepFamily.familyHistory.hypertension,
+          heart_disease: formData.sleepFamily.familyHistory.heartDisease,
+          mental_health_conditions:
+            formData.sleepFamily.familyHistory.mentalHealthConditions
+        }
+      };
+
+      // Basic validation (frontend guard)
+      if (
+        !payload.sleep.average_sleep_hours ||
+        !payload.sleep.sleep_consistency ||
+        !payload.sleep.sleep_quality
+      ) {
+        alert("Please fill all required sleep fields");
+        return false;
+      }
+
+      const response = await fetch(
+        "http://localhost:5000/api/health/sleep-family",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message || "Failed to save sleep/family data");
+        return false;
+      }
+
+      console.log("Sleep & Family saved:", data);
+      alert("Sleep & family history saved successfully ✅");
+
+      return true;
+    } catch (error) {
+      console.error("SleepFamily error:", error);
+      alert("Server error");
+      return false;
+    }
+  };
+
 
   return (
     <>
@@ -237,7 +440,9 @@ export default function TellMe() {
 
               <div className="modal-actions">
                 <button className="secondary" onClick={() => setActiveCard(null)}>Cancel</button>
-                <button className="primary" onClick={() => handleSubmit('about')}>Submit</button>
+                <button className="primary" onClick={() => handleSubmit("about")}>
+                  Submit
+                </button>
               </div>
             </div>
           </div>

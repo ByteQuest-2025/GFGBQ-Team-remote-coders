@@ -19,7 +19,7 @@ export default function Login() {
     const res = await verifyOtpApi({ email, otp });
     if (res.token) {
       localStorage.setItem("token", res.token);
-      window.location.href = "/dashboard";
+      window.location.href = "/";
     } else {
       setMessage(res.message);
     }
