@@ -1,0 +1,191 @@
+/* =========================
+   AUTH PAGE BACKGROUND
+========================= */
+/* .auth-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center; */
+
+  /* Gradient like your reference */
+  /* background: linear-gradient(
+    135deg,
+    #1bb6b0 0%,
+    #4fd1c5 50%,
+    #a7f3f0 100%
+  ); */
+
+  /* position: relative;
+  overflow: hidden;
+  font-family: "Inter", Arial, sans-serif;
+} */
+
+.auth-wrapper {
+  position: fixed;
+  inset: 0; /* top:0 right:0 bottom:0 left:0 */
+
+  width: 100vw;
+  height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: linear-gradient(
+    135deg,
+    #1bb6b0 0%,
+    #4fd1c5 50%,
+    #a7f3f0 100%
+  );
+
+  overflow: hidden;
+  z-index: 9999; /* sit above all layouts */
+
+  font-family: "Inter", Arial, sans-serif;
+}
+
+
+/* =========================
+   FLOATING MEDICAL SHAPES
+========================= */
+.auth-wrapper::before,
+.auth-wrapper::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+}
+
+/* Left bubble */
+.auth-wrapper::before {
+  width: 280px;
+  height: 280px;
+  top: 10%;
+  left: -120px;
+}
+
+/* Right bubble */
+.auth-wrapper::after {
+  width: 340px;
+  height: 340px;
+  bottom: -140px;
+  right: -140px;
+}
+
+/* ECG Line (subtle) */
+.auth-wrapper .ecg-line {
+  position: absolute;
+  bottom: 15%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.6),
+    transparent
+  );
+  opacity: 0.4;
+}
+
+/* =========================
+   AUTH CARD (GLASSMORPHISM)
+========================= */
+.auth-wrapper .card {
+  position: relative;
+  z-index: 2;
+
+  width: 360px;
+  padding: 30px;
+
+  border-radius: 18px;
+
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(18px);
+
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* =========================
+   TITLE
+========================= */
+.auth-wrapper .card h2 {
+  text-align: center;
+  margin-bottom: 22px;
+  color: #0f2a2a;
+  font-weight: 600;
+}
+
+/* =========================
+   INPUTS (UNCHANGED LOGIC)
+========================= */
+.auth-wrapper input {
+  width: 100%;
+  padding: 11px 12px;
+  margin-bottom: 14px;
+
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.auth-wrapper input:focus {
+  outline: none;
+  border-color: #1bb6b0;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+.auth-wrapper button {
+  width: 100%;
+  padding: 12px;
+
+  background: linear-gradient(
+    135deg,
+    #1bb6b0,
+    #4fd1c5
+  );
+
+  color: white;
+  border: none;
+  border-radius: 10px;
+
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth-wrapper button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.auth-wrapper button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================
+   TEXT / MESSAGES
+========================= */
+.auth-wrapper p {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.auth-wrapper .success {
+  color: #0f766e;
+}
+
+.auth-wrapper .error {
+  color: #dc2626;
+}
