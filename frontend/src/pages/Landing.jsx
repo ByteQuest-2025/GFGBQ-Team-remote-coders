@@ -11,8 +11,10 @@ const Landing = () => {
   const howItWorksRef = useRef(null);
 
   const { isLoggedIn, logout } = useAuth();
+  const [openMenu, setOpenMenu] = useState(false);
 
   const scrollToHowItWorks = () => {
+    setOpenMenu(false);
     howItWorksRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -24,12 +26,20 @@ const Landing = () => {
           SilentSense<span>AI</span>
         </div>
 
+        <button
+          className="nav-toggle"
+          aria-label="Toggle navigation"
+          onClick={() => setOpenMenu(!openMenu)}
+        >
+          {openMenu ? '✕' : '☰'}
+        </button>
+
         <ul className="nav-links">
-          <li>Home</li>
-          <li>Platform</li>
-          <li>Research</li>
-          <li>About</li>
-          <li>Contact</li>
+          <li onClick={() => setOpenMenu(false)}>Home</li>
+          <li onClick={() => setOpenMenu(false)}>Platform</li>
+          <li onClick={() => setOpenMenu(false)}>Research</li>
+          <li onClick={() => setOpenMenu(false)}>About</li>
+          <li onClick={() => setOpenMenu(false)}>Contact</li>
         </ul>
 
         <div className="nav-actions">
@@ -37,14 +47,14 @@ const Landing = () => {
             <>
               <button
                 className="nav-login-btn"
-                onClick={() => navigate("/login")}
+                onClick={() => { setOpenMenu(false); navigate("/login"); }}
               >
                 Login
               </button>
 
               <button
                 className="nav-signup-btn"
-                onClick={() => navigate("/signup")}
+                onClick={() => { setOpenMenu(false); navigate("/signup"); }}
               >
                 Signup
               </button>
@@ -66,6 +76,20 @@ const Landing = () => {
               </button>
             </>
           )}
+        </div>
+
+        <div className={`mobile-menu ${openMenu ? 'open' : ''}`} role="menu">
+          <ul>
+            <li onClick={() => setOpenMenu(false)}>Home</li>
+            <li onClick={() => setOpenMenu(false)}>Platform</li>
+            <li onClick={() => setOpenMenu(false)}>Research</li>
+            <li onClick={() => setOpenMenu(false)}>About</li>
+            <li onClick={() => setOpenMenu(false)}>Contact</li>
+          </ul>
+          <div className="mobile-actions">
+            <button className="nav-login-btn" onClick={() => { setOpenMenu(false); navigate('/login'); }}>Login</button>
+            <button className="nav-signup-btn" onClick={() => { setOpenMenu(false); navigate('/signup'); }}>Signup</button>
+          </div>
         </div>
       </nav>
 
