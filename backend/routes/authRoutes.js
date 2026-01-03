@@ -139,8 +139,14 @@ router.post("/verify-otp", async (req, res) => {
 
     await Otp.deleteOne({ email });
 
+    // Fetch user by email to include id in JWT payload
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
     const token = jwt.sign(
-      { email },
+      { id: user._id, email },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
