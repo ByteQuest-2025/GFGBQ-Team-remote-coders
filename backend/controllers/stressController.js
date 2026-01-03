@@ -22,7 +22,7 @@ exports.submitPHQ9 = async (req, res) => {
 
     await assessment.save();
 
-    res.status(201).json({
+    res.status(200).json({
       phq9Score: score,
       severity,
       escalationRecommended,
