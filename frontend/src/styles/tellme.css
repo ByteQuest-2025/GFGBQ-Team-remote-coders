@@ -1,0 +1,183 @@
+:root {
+  --primary: #2563eb;
+  --primary-dark: #1e40af;
+  --border: #e6e6e6;
+  --bg-muted: #f8fafc;
+  --radius: 6px;
+}
+
+.tellme-page {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: linear-gradient(180deg, #e9fbfb 0%, #f7fff9 100%);
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  z-index: 0;
+}
+
+.tellme-container {
+  max-width: 720px;
+  min-width: 520px;
+  width: 80%;
+  padding: 36px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 30px 60px rgba(2, 6, 23, 0.08);
+  border: 1px solid rgba(16, 24, 40, 0.04);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Accent and friendly styles */
+.tellme-title {
+  color: var(--primary-dark);
+  letter-spacing: 0.2px;
+}
+
+/* Input focus and nicer inputs */
+.tt-input {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 16px;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.tt-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.08), 0 0 0 6px rgba(37, 99, 235, 0.06);
+}
+
+/* Button gradient and larger */
+.tellme-form button[type="submit"] {
+  background: linear-gradient(90deg, var(--primary) 0%, #4f46e5 100%);
+  color: #ffffff;
+  border: none;
+  padding: 12px 22px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.12);
+}
+
+.tellme-form button[type="submit"]:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.02);
+}
+
+/* Make wide inputs really wide inside larger container */
+.tt-input-wide {
+  width: 90%;
+}
+
+/* Responsive: on small screens remove min-width and stack nicely */
+@media (max-width: 640px) {
+  .tellme-container {
+    min-width: 0;
+    width: 95%;
+    padding: 20px;
+    border-radius: 12px;
+  }
+  .tt-input-wide {
+    width: 100%;
+  }
+  .tellme-title {
+    font-size: 1.25rem;
+  }
+}
+
+/* TITLE */
+.tellme-title {
+  margin-bottom: 16px;
+  font-size: 1.5rem;
+  color: #0f2a2a;
+}
+
+/* FORM LAYOUT */
+.tellme-form {
+  display: grid;
+  gap: 16px;
+}
+
+/* LABELS */
+.tt-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #0f2a2a;
+}
+
+/* INPUTS */
+.tt-input {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.tt-input-wide {
+  width: 85%;
+}
+
+/* FIELDSETS */
+.tt-fieldset {
+  border: none;
+  padding: 0;
+}
+
+.tt-fieldset legend {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.tt-fieldset label {
+  margin-right: 12px;
+}
+
+/* OTHER ROLE INPUT */
+.tt-other {
+  margin-top: 8px;
+}
+
+/* SUBMIT BUTTON */
+.tt-submit {
+  margin-top: 12px;
+}
+
+.tellme-form button[type="submit"] {
+  background: var(--primary);
+  color: #ffffff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.tellme-form button[type="submit"]:hover {
+  background: var(--primary-dark);
+}
+
+/* SUBMITTED DATA BOX */
+.tt-submitted {
+  margin-top: 20px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  background: var(--bg-muted);
+  border-radius: var(--radius);
+}
+
+.tt-submitted h3 {
+  margin: 0 0 8px 0;
+}
+
+.tt-submitted pre {
+  margin: 0;
+  white-space: pre-wrap;
+}

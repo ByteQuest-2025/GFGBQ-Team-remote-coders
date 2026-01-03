@@ -30,14 +30,11 @@ app.get("/", (req, res) => {
 const authRoutes = require("./routes/authRoutes");
 app.use("/api/auth", authRoutes);
 
-// 🧠 Profile / Context routes (BLOCK 1)
-// const profileRoutes = require("./routes/profileRoutes");
-// app.use("/api", profileRoutes);
+ const profileRoutes = require("./routes/profileRoutes");
+ app.use("/api", profileRoutes);
 
 const stressRoutes = require("./routes/stressRoutes");
 app.use("/api/stress", stressRoutes);
-
-
 // ===============================
 // SERVER START
 // ===============================

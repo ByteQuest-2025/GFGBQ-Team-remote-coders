@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { loginApi, verifyOtpApi } from "../api/auth";
-// import "../styles/auth.css";
+import "../styles/auth.css";
 
 export default function Login() {
   const [step, setStep] = useState("login");
@@ -20,29 +20,45 @@ export default function Login() {
     if (res.token) {
       localStorage.setItem("token", res.token);
       window.location.href = "/dashboard";
-    } else setMessage(res.message);
+    } else {
+      setMessage(res.message);
+    }
   };
 
   return (
-    <div className="card">
-      <h2>Login</h2>
+    <div className="auth-wrapper">
+      
 
-      {step === "login" && (
-        <>
-          <input placeholder="Email" onChange={e => setEmail(e.target.value)} />
-          <input type="password" placeholder="Password" onChange={e => setPassword(e.target.value)} />
-          <button onClick={login}>Login</button>
-        </>
-      )}
+      <div className="card">
+        <h2>Login</h2>
 
-      {step === "otp" && (
-        <>
-          <input placeholder="OTP" onChange={e => setOtp(e.target.value)} />
-          <button onClick={verifyOtp}>Verify OTP</button>
-        </>
-      )}
+        {step === "login" && (
+          <>
+            <input
+              placeholder="Email"
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button onClick={login}>Login</button>
+          </>
+        )}
 
-      <p>{message}</p>
+        {step === "otp" && (
+          <>
+            <input
+              placeholder="OTP"
+              onChange={(e) => setOtp(e.target.value)}
+            />
+            <button onClick={verifyOtp}>Verify OTP</button>
+          </>
+        )}
+
+        <p>{message}</p>
+      </div>
     </div>
   );
 }
