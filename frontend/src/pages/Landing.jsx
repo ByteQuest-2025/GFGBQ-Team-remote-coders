@@ -3,7 +3,7 @@ import Lottie from "lottie-react";
 import medicalAnimation from "../assets/Medical-Healthcare.json";
 import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
-import { useRef } from "react";
+import { useRef,useState } from "react"; // use state is not pulled i need to 
 import { useAuth } from "../context/AuthContext";
 
 const Landing = () => {

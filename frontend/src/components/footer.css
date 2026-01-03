@@ -1,17 +1,18 @@
 /* =========================
-   FOOTER
+   FOOTER - Enhanced for Responsiveness
 ========================= */
 .footer {
   background: #023c38;
   color: #d9f3f3;
-  padding: 80px 8% 30px;
+  padding: 60px 8% 30px;
+  width: 100%;
 }
 
-/* INNER GRID */
+/* INNER GRID - Responsive layout */
 .footer-inner {
   display: grid;
   grid-template-columns: 1.5fr 2fr;
-  gap: 80px;
+  gap: 40px;
   margin-bottom: 40px;
 }
 
@@ -30,6 +31,7 @@
   max-width: 380px;
   line-height: 1.6;
   opacity: 0.85;
+  font-size: 14px;
 }
 
 /* LINKS */
@@ -55,10 +57,13 @@
   font-size: 14px;
   opacity: 0.85;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .footer-links ul li:hover {
   opacity: 1;
+  color: #1bb6b0;
+  transform: translateX(5px);
 }
 
 /* BOTTOM BAR */
@@ -68,4 +73,123 @@
   opacity: 0.6;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: 20px;
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 1200px) {
+  .footer {
+    padding: 60px 6% 30px;
+  }
+
+  .footer-inner {
+    gap: 30px;
+  }
+
+  .footer-brand p {
+    max-width: 320px;
+  }
+}
+
+@media (max-width: 992px) {
+  .footer {
+    padding: 50px 5% 30px;
+  }
+
+  .footer-inner {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .footer-brand {
+    text-align: center;
+  }
+
+  .footer-brand h3 {
+    justify-content: center;
+    display: flex;
+  }
+
+  .footer-links {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .footer {
+    padding: 40px 5% 25px;
+  }
+
+  .footer-inner {
+    gap: 30px;
+  }
+
+  .footer-brand h3 {
+    font-size: 22px;
+  }
+
+  .footer-brand p {
+    font-size: 13px;
+    max-width: 100%;
+  }
+
+  .footer-links {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+  }
+
+  .footer-links h4 {
+    font-size: 14px;
+  }
+
+  .footer-links ul li {
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+}
+
+@media (max-width: 576px) {
+  .footer {
+    padding: 30px 5% 20px;
+  }
+
+  .footer-inner {
+    gap: 25px;
+  }
+
+  .footer-brand h3 {
+    font-size: 20px;
+  }
+
+  .footer-links {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .footer-bottom {
+    font-size: 12px;
+    padding-top: 15px;
+  }
+}
+
+@media (max-width: 400px) {
+  .footer {
+    padding: 25px 4% 15px;
+  }
+
+  .footer-brand h3 {
+    font-size: 18px;
+  }
+
+  .footer-brand p {
+    font-size: 12px;
+  }
+
+  .footer-links h4 {
+    font-size: 13px;
+  }
+
+  .footer-links ul li {
+    font-size: 12px;
+  }
 }
