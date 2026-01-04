@@ -613,6 +613,136 @@
   margin-bottom: 12px;
 }
 
+/* Nearby Care Section */
+.care-section {
+  margin-top: 30px;
+  grid-column: 1 / -1;
+  background: #ffffff;
+  border: 1px solid #e0f0f0;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.care-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.care-header h2 {
+  margin: 0;
+  font-size: 20px;
+  color: #0f2a2a;
+  font-weight: 600;
+}
+
+.loading-note {
+  font-size: 14px;
+  color: #355f5f;
+}
+
+.care-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.care-card {
+  border: 1px solid #edf7f7;
+  border-radius: 14px;
+  padding: 16px;
+  background: #f9fefe;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.care-card:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.care-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.care-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0f2a2a;
+}
+
+.care-type {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #0f2a2a;
+  background: #e6f7f6;
+  border: 1px solid #c7f3ea;
+}
+
+.care-type.hospital {
+  background: #eef2ff;
+  border-color: #c7d2fe;
+  color: #3730a3;
+}
+
+.care-type.clinic {
+  background: #ecfeff;
+  border-color: #a5f3fc;
+  color: #0e7490;
+}
+
+.care-type.doctor {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #991b1b;
+}
+
+.care-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.care-distance {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1bb6b0;
+}
+
+.care-address {
+  font-size: 13px;
+  color: #355f5f;
+}
+
+.care-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.map-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: #1bb6b0;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.map-link:hover {
+  background: #17a09a;
+}
+
 /* ANIMATIONS */
 @keyframes fadeIn {
   from { opacity: 0; }

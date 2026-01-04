@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import "../styles/tellme.css";
@@ -19,14 +19,14 @@ export default function TellMe() {
   const [showSummaryPopup, setShowSummaryPopup] = useState(false);
   const [summaryData, setSummaryData] = useState(null);
   const [isLoadingSummary, setIsLoadingSummary] = useState(false);
-  const [summaryError, setSummaryError] = useState(null);
+  
 
   const [locationError, setLocationError] = useState("");
   const [manualCity, setManualCity] = useState("");
   const [showManualLocation, setShowManualLocation] = useState(false);
 
-  const [doctors, setDoctors] = useState([]);
   const [loadingDoctors, setLoadingDoctors] = useState(false);
+  const [topDoctors, setTopDoctors] = useState([]);
 
 
   const TOTAL_CARDS = 3;
@@ -76,7 +76,7 @@ export default function TellMe() {
           source: "gps"
         });
       },
-      (error) => {
+      () => {
         console.warn("Location permission denied");
 
         setShowManualLocation(true);
@@ -99,8 +99,36 @@ export default function TellMe() {
     source: null // "gps" | "manual"
   });
 
+  const geocodeCity = async (cityName) => {
+    try {
+      const resp = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cityName)}&format=json&limit=1`);
+      const arr = await resp.json();
+      if (Array.isArray(arr) && arr.length > 0) {
+        const lat = parseFloat(arr[0].lat);
+        const lng = parseFloat(arr[0].lon);
+        setLocation({ lat, lng, source: "manual" });
+        return { lat, lng };
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  };
 
-  const fetchDoctors = async () => {
+  const distanceKm = (lat1, lon1, lat2, lon2) => {
+    const R = 6371;
+    const toRad = (v) => (v * Math.PI) / 180;
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return Math.round(R * c * 10) / 10;
+  };
+
+  const fetchDoctors = useCallback(async () => {
     try {
       setLoadingDoctors(true);
       const token = localStorage.getItem("token");
@@ -118,19 +146,30 @@ export default function TellMe() {
       });
 
       const data = await res.json();
-      setDoctors(data.doctors || []);
+      const list = (data.doctors || []).map(d => {
+        const dist = location.lat && location.lng && d.lat && d.lng
+          ? distanceKm(location.lat, location.lng, d.lat, d.lng)
+          : null;
+        return { ...d, distance: dist };
+      }).sort((a, b) => {
+        if (a.distance == null && b.distance == null) return 0;
+        if (a.distance == null) return 1;
+        if (b.distance == null) return -1;
+        return a.distance - b.distance;
+      }).slice(0, 6);
+      setTopDoctors(list);
     } catch (err) {
       console.error("Doctor fetch failed", err);
     } finally {
       setLoadingDoctors(false);
     }
-  };
+  }, [location.lat, location.lng]);
 
   useEffect(() => {
     if (location.lat && location.lng) {
       fetchDoctors();
     }
-  }, [location.lat, location.lng]);
+  }, [location.lat, location.lng, fetchDoctors]);
 
 
 
@@ -144,7 +183,7 @@ export default function TellMe() {
     }
   }, [completedCards]);
 
-  if (loading) return <div>Loading...</div>;
+  
 
   // Form data state
   const [formData, setFormData] = useState({
@@ -484,7 +523,6 @@ export default function TellMe() {
   const generateDoctorSummary = async () => {
     try {
       setIsLoadingSummary(true);
-      setSummaryError(null);
 
       const token = localStorage.getItem("token");
       const response = await axios.post(
@@ -501,7 +539,6 @@ export default function TellMe() {
       setSummaryData(response.data);
       setShowSummaryPopup(true);
     } catch (err) {
-      setSummaryError('Failed to generate doctor summary. Please try again.');
       console.error('Error generating summary:', err);
     } finally {
       setIsLoadingSummary(false);
@@ -532,7 +569,6 @@ export default function TellMe() {
       link.parentNode.removeChild(link);
     } catch (err) {
       console.error('Error downloading PDF:', err);
-      setSummaryError('Failed to download PDF. Please try again.');
     }
   };
 
@@ -578,27 +614,25 @@ const getScoreLabel = (score) => {
               onChange={(e) => setManualCity(e.target.value)}
             />
 
-            <button
-              className="primary-btn"
-              onClick={() => {
+                <button
+                  className="primary-btn"
+                  onClick={() => {
                 if (!manualCity.trim()) {
                   alert("Please enter a city");
                   return;
                 }
-
-                setLocation({
-                  lat: null,
-                  lng: null,
-                  source: "manual"
+                geocodeCity(manualCity).then((coords) => {
+                  if (!coords) {
+                    alert("Could not find the specified city");
+                    return;
+                  }
+                  fetchDoctors();
                 });
-
-                console.log("📍 Location via manual input:", manualCity);
-                alert(`Location set to ${manualCity}`);
               }}
-            >
-              Use this location
-            </button>
-          </div>
+                >
+                  Use this location
+                </button>
+              </div>
         )}
 
         {/* CARDS CONTAINER */}
@@ -983,31 +1017,40 @@ const getScoreLabel = (score) => {
         </div>
       )}
 
-      {doctors.length > 0 && (
-        <div className="doctor-section">
-          <h2>Doctors Near You</h2>
-
-          {loadingDoctors && <p>Finding nearby doctors...</p>}
-
-          <div className="doctor-grid">
-            {doctors.map((doc, i) => (
-              <div key={i} className="doctor-card">
-                <h4>{doc.name}</h4>
-                <p>Type: {doc.type}</p>
-                <p>{doc.address}</p>
-                <a
-                  href={`https://www.google.com/maps?q=${doc.lat},${doc.lng}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  View on Map
-                </a>
+      {topDoctors.length > 0 && (
+        <div className="care-section">
+          <div className="care-header">
+            <h2>Recommended Hospitals & Clinics Near You</h2>
+            {loadingDoctors && <span className="loading-note">Fetching nearby care...</span>}
+          </div>
+          <div className="care-grid">
+            {topDoctors.map((doc, i) => (
+              <div key={i} className="care-card">
+                <div className="care-card-top">
+                  <div className="care-title">{doc.name}</div>
+                  <span className={`care-type ${doc.type === 'hospital' ? 'hospital' : doc.type === 'clinic' ? 'clinic' : 'doctor'}`}>
+                    {doc.type || 'care'}
+                  </span>
+                </div>
+                <div className="care-meta">
+                  {doc.distance != null && <span className="care-distance">{doc.distance} km away</span>}
+                  <span className="care-address">{doc.address || 'Address not available'}</span>
+                </div>
+                <div className="care-actions">
+                  <a
+                    className="map-link"
+                    href={`https://www.google.com/maps?q=${doc.lat},${doc.lng}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    View in Maps
+                  </a>
+                </div>
               </div>
             ))}
           </div>
         </div>
       )}
-
 
       <Footer />
     </>

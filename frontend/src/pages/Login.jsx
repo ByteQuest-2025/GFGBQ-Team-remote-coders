@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { loginApi, verifyOtpApi } from "../api/auth";
 import "../styles/auth.css";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { } from "react-router-dom";
 
 
 export default function Login() {
@@ -11,8 +10,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
   const [message, setMessage] = useState("");
-  const navigate = useNavigate();
-  const { login: setLoginState } = useAuth();
+  
 
 
   const login = async () => {
