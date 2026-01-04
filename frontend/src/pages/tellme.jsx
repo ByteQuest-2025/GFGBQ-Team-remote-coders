@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import "../styles/tellme.css";
 import { useAuth } from "../context/AuthContext";
+import axios from 'axios';
 
 export default function TellMe() {
   const navigate = useNavigate();
@@ -14,9 +15,12 @@ export default function TellMe() {
   const [analyzing, setAnalyzing] = useState(false);
   const [healthScore, setHealthScore] = useState(null);
   const [summaryText, setSummaryText] = useState("");
+  const [showSummaryPopup, setShowSummaryPopup] = useState(false);
+  const [summaryData, setSummaryData] = useState(null);
+  const [isLoadingSummary, setIsLoadingSummary] = useState(false);
+  const [summaryError, setSummaryError] = useState(null);
 
   const TOTAL_CARDS = 3;
-
 
   useEffect(() => {
     if (!loading && !isLoggedIn) {
@@ -153,10 +157,6 @@ export default function TellMe() {
     setActiveCard(null);
   };
 
-
-
-
-
   const phq9Questions = [
     "Little interest or pleasure in doing things",
     "Feeling down, depressed, or hopeless",
@@ -169,9 +169,7 @@ export default function TellMe() {
     "Thoughts that you would be better off dead, or of hurting yourself in some way"
   ];
 
-
   // -------------pm Backend------------------------
-
   const submitProfileContext = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -247,9 +245,7 @@ export default function TellMe() {
     }
   };
 
-
   // -------------------------vedant backend------------------
-
   const submitPHQ9 = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -364,7 +360,6 @@ export default function TellMe() {
     }
   };
 
-
   const analyzeHealth = async () => {
     try {
       setAnalyzing(true);
@@ -394,6 +389,62 @@ export default function TellMe() {
       alert("Failed to analyze health data");
     } finally {
       setAnalyzing(false);
+    }
+  };
+
+  // Doctor Summary Functions
+  const generateDoctorSummary = async () => {
+    try {
+      setIsLoadingSummary(true);
+      setSummaryError(null);
+
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        'http://localhost:5000/api/health/doctor-summary',
+        { time_window_days: 120 },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+
+      setSummaryData(response.data);
+      setShowSummaryPopup(true);
+    } catch (err) {
+      setSummaryError('Failed to generate doctor summary. Please try again.');
+      console.error('Error generating summary:', err);
+    } finally {
+      setIsLoadingSummary(false);
+    }
+  };
+
+  const downloadPDF = async () => {
+    if (!summaryData) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
+        `http://localhost:5000/api/health/doctor-summary/${summaryData.summary_id}/pdf`,
+        {
+          responseType: 'blob',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `doctor_summary_${summaryData.summary_id}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    } catch (err) {
+      console.error('Error downloading PDF:', err);
+      setSummaryError('Failed to download PDF. Please try again.');
     }
   };
 
@@ -688,6 +739,8 @@ export default function TellMe() {
                 >
                   {analyzing ? "Analyzing..." : "Analyze My Health with AI"}
                 </button>
+
+                
               </div>
 
               {analysisResult && (
@@ -700,10 +753,89 @@ export default function TellMe() {
                   </div>
                 </div>
               )}
+              {analysisResult && (
+                  <button
+                    className="doctor-summary-btn"
+                    onClick={generateDoctorSummary}
+                    disabled={isLoadingSummary}
+                  >
+                    {isLoadingSummary ? (
+                      <>
+                        <span className="loading-spinner"></span>
+                        Generating...
+                      </>
+                    ) : 'Generate Doctor Summary'}
+                  </button>
+                )}
             </div>
           </div>
         )}
       </div>
+
+      {/* Doctor Summary Popup */}
+      {showSummaryPopup && (
+        <div className="summary-popup-overlay">
+          <div className="summary-popup">
+            <div className="popup-header">
+              <h3>Doctor Summary</h3>
+              <button
+                className="close-popup-btn"
+                onClick={() => setShowSummaryPopup(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="popup-content">
+              <div className="summary-section">
+                <h4>Reason for Visit</h4>
+                <p>{summaryData.visit_summary.reason_for_visit}</p>
+              </div>
+
+              <div className="summary-section">
+                <h4>Key Risk Drivers</h4>
+                <ul>
+                  {summaryData.visit_summary.key_risk_drivers.map((driver, index) => (
+                    <li key={index}>{driver}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="summary-section">
+                <h4>Relevant Trends</h4>
+                <ul>
+                  {summaryData.visit_summary.relevant_trends.map((trend, index) => (
+                    <li key={index}>{trend}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="summary-section">
+                <h4>Suggested Evaluations</h4>
+                <ul>
+                  {summaryData.visit_summary.suggested_evaluations.map((item, index) => (
+                    <li key={index}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="summary-meta">
+                <p>Generated: {new Date(summaryData.generated_at).toLocaleString()}</p>
+                <p>Summary ID: {summaryData.summary_id}</p>
+              </div>
+            </div>
+
+            <div className="popup-footer">
+              <button
+                className="download-pdf-btn"
+                onClick={downloadPDF}
+              >
+                Download PDF
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </>
