@@ -14,6 +14,12 @@ export default function TellMe() {
   const [analyzing, setAnalyzing] = useState(false);
   const [healthScore, setHealthScore] = useState(null);
   const [summaryText, setSummaryText] = useState("");
+  const [locationError, setLocationError] = useState("");
+  const [manualCity, setManualCity] = useState("");
+  const [showManualLocation, setShowManualLocation] = useState(false);
+  const [doctors, setDoctors] = useState([]);
+  const [loadingDoctors, setLoadingDoctors] = useState(false);
+
 
   const TOTAL_CARDS = 3;
 
@@ -41,6 +47,85 @@ export default function TellMe() {
       }
     }
   }, []);
+
+
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      setShowManualLocation(true);
+      setLocationError("Geolocation is not supported by your browser");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+
+        console.log("📍 Location via GPS:", lat, lng);
+
+        setLocation({
+          lat,
+          lng,
+          source: "gps"
+        });
+      },
+      (error) => {
+        console.warn("Location permission denied");
+
+        setShowManualLocation(true);
+        setLocationError(
+          "We couldn't access your location. Please enter your city manually."
+        );
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    );
+  }, []);
+
+  // 📍 Location state
+  const [location, setLocation] = useState({
+    lat: null,
+    lng: null,
+    source: null // "gps" | "manual"
+  });
+
+
+  const fetchDoctors = async () => {
+    try {
+      setLoadingDoctors(true);
+      const token = localStorage.getItem("token");
+
+      const res = await fetch("http://localhost:5000/api/doctors/nearby", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          lat: location.lat,
+          lng: location.lng
+        })
+      });
+
+      const data = await res.json();
+      setDoctors(data.doctors || []);
+    } catch (err) {
+      console.error("Doctor fetch failed", err);
+    } finally {
+      setLoadingDoctors(false);
+    }
+  };
+
+  useEffect(() => {
+    if (location.lat && location.lng) {
+      fetchDoctors();
+    }
+  }, [location.lat, location.lng]);
+
+
 
   // Save state to localStorage whenever completedCards changes
   useEffect(() => {
@@ -414,6 +499,42 @@ export default function TellMe() {
           </p>
         </div>
 
+        {/* 📍 LOCATION SECTION */}
+        {showManualLocation && !location.lat && (
+          <div className="location-box">
+            <h3>📍 Enter your location</h3>
+            <p>{locationError}</p>
+
+            <input
+              type="text"
+              placeholder="Enter your city (e.g. Pune)"
+              value={manualCity}
+              onChange={(e) => setManualCity(e.target.value)}
+            />
+
+            <button
+              className="primary-btn"
+              onClick={() => {
+                if (!manualCity.trim()) {
+                  alert("Please enter a city");
+                  return;
+                }
+
+                setLocation({
+                  lat: null,
+                  lng: null,
+                  source: "manual"
+                });
+
+                console.log("📍 Location via manual input:", manualCity);
+                alert(`Location set to ${manualCity}`);
+              }}
+            >
+              Use this location
+            </button>
+          </div>
+        )}
+
         {/* CARDS CONTAINER */}
         <div className="cards-container">
           {/* Card 1: About You & Medical Issues */}
@@ -704,6 +825,32 @@ export default function TellMe() {
           </div>
         )}
       </div>
+
+      {doctors.length > 0 && (
+        <div className="doctor-section">
+          <h2>Doctors Near You</h2>
+
+          {loadingDoctors && <p>Finding nearby doctors...</p>}
+
+          <div className="doctor-grid">
+            {doctors.map((doc, i) => (
+              <div key={i} className="doctor-card">
+                <h4>{doc.name}</h4>
+                <p>Type: {doc.type}</p>
+                <p>{doc.address}</p>
+                <a
+                  href={`https://www.google.com/maps?q=${doc.lat},${doc.lng}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  View on Map
+                </a>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
 
       <Footer />
     </>
