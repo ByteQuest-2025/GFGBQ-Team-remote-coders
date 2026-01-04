@@ -1,28 +1,11 @@
-# 🚀 Repository for **Remote Coders**
-### 🎯 *Vibe Coding Hackathon*
-
----
-
-# 🩺 **Silent Disease Early Detection Engine**
-
-> **Detect what patients don’t even know they have.**
+#  Repository for **Remote Coders**
+###  *Vibe Coding Hackathon*
 
 ---
 
 ## 1️⃣ **Problem Statement**
 
 ### **PS05 – Silent Disease Early Detection Engine**
-
-Many **lifestyle-related diseases** remain undiagnosed for years because early symptoms are **subtle, ignored, or misunderstood**.  
-Health signals are scattered across:
-
-- Daily habits  
-- Work patterns  
-- Stress levels  
-
-Existing healthcare systems rely heavily on **reactive, symptom-based diagnosis**, leading to **late detection and severe complications**.
-
-🚨 **Lack of early awareness is a major gap in preventive healthcare.**
 
 ---
 
@@ -156,9 +139,9 @@ npm install
 # Start the development server
 npm run dev
 
----
+```
 
-🧪 Usage Instructions
+## Usage Instructions
 
 Open the application in your browser
 
@@ -174,13 +157,13 @@ Download or share the health summary
 
 Check recommended nearby clinics or hospitals
 
-⚠️ Disclaimer:
+### Disclaimer:
 SilentSense AI provides risk awareness insights, not medical diagnoses. Always consult healthcare professionals for clinical decisions.
 
 
 ---
 
-Conclusion
+## Conclusion
 
 SilentSense AI empowers users with early preventive health awareness by transforming everyday lifestyle data into actionable insights.
 
