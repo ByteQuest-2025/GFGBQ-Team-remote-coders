@@ -1,6 +1,29 @@
 const StressAssessment = require("../models/StressAssessment");
 const SleepFamilyAssessment = require("../models/SleepFamilyAssessment");
+const DoctorVisitSummary = require("../models/DoctorVisitSummary");
 const { callLLM } = require("../services/llmService");
+
+// helper (keep outside controller)
+const extractJSON = (text) => {
+  try {
+    let cleaned = text
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
+
+    const firstBrace = cleaned.indexOf("{");
+    const lastBrace = cleaned.lastIndexOf("}");
+
+    if (firstBrace === -1 || lastBrace === -1) {
+      throw new Error("No JSON found");
+    }
+
+    cleaned = cleaned.substring(firstBrace, lastBrace + 1);
+    return JSON.parse(cleaned);
+  } catch {
+    return null;
+  }
+};
 
 exports.generateDoctorSummary = async (req, res) => {
   try {
@@ -49,14 +72,12 @@ exports.generateDoctorSummary = async (req, res) => {
       family_history: sleepFamily.familyHistory
     };
 
-    // 4️⃣ Build LLM prompt
+    // 4️⃣ Build prompt
     const prompt = `
 You MUST return ONLY a valid JSON object.
 DO NOT include explanations, markdown, or comments.
-DO NOT wrap the response in triple backticks.
 
 Return JSON in EXACTLY this structure:
-
 {
   "reason_for_visit": "",
   "key_risk_drivers": [],
@@ -67,48 +88,31 @@ Return JSON in EXACTLY this structure:
 Health context:
 ${JSON.stringify(healthContext, null, 2)}
 `;
-const extractJSON = (text) => {
-  try {
-    // Remove markdown fences if present
-    let cleaned = text
-      .replace(/```json/g, "")
-      .replace(/```/g, "")
-      .trim();
-
-    // Extract first JSON block
-    const firstBrace = cleaned.indexOf("{");
-    const lastBrace = cleaned.lastIndexOf("}");
-
-    if (firstBrace === -1 || lastBrace === -1) {
-      throw new Error("No JSON object found");
-    }
-
-    cleaned = cleaned.substring(firstBrace, lastBrace + 1);
-
-    return JSON.parse(cleaned);
-  } catch (err) {
-    return null;
-  }
-};
-
 
     // 5️⃣ Call LLM
     const rawOutput = await callLLM(prompt);
+    const summary = extractJSON(rawOutput);
 
-   const summary = extractJSON(rawOutput);
+    if (!summary) {
+      return res.status(500).json({
+        message: "LLM returned invalid JSON",
+        raw_output: rawOutput
+      });
+    }
 
-if (!summary) {
-  return res.status(500).json({
-    message: "LLM returned invalid JSON",
-    raw_output: rawOutput // helpful during debugging
-  });
-}
-
+    // ===============================
+    // ✅ SAVE TO DB (CRITICAL STEP)
+    // ===============================
+    const savedSummary = await DoctorVisitSummary.create({
+      user: userId,
+      summary
+    });
 
     // 6️⃣ Respond
     res.json({
+      summary_id: savedSummary._id,
       visit_summary: summary,
-      generated_at: new Date().toISOString()
+      generated_at: savedSummary.generatedAt
     });
 
   } catch (error) {

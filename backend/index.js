@@ -45,6 +45,10 @@ app.use("/api/health", analysisRoutes);
 const doctorSummaryRoutes = require("./routes/doctorSummaryRoutes");
 app.use("/api/health", doctorSummaryRoutes);
 
+const doctorSummaryPdfRoutes = require("./routes/doctorSummaryPdfRoutes");
+app.use("/api/health", doctorSummaryPdfRoutes);
+
+
 
 // ===============================
 // SERVER START
