@@ -15,13 +15,16 @@ export default function TellMe() {
   const [analyzing, setAnalyzing] = useState(false);
   const [healthScore, setHealthScore] = useState(null);
   const [summaryText, setSummaryText] = useState("");
+
   const [showSummaryPopup, setShowSummaryPopup] = useState(false);
   const [summaryData, setSummaryData] = useState(null);
   const [isLoadingSummary, setIsLoadingSummary] = useState(false);
   const [summaryError, setSummaryError] = useState(null);
+
   const [locationError, setLocationError] = useState("");
   const [manualCity, setManualCity] = useState("");
   const [showManualLocation, setShowManualLocation] = useState(false);
+
   const [doctors, setDoctors] = useState([]);
   const [loadingDoctors, setLoadingDoctors] = useState(false);
 
@@ -861,7 +864,7 @@ export default function TellMe() {
                   {analyzing ? "Analyzing..." : "Analyze My Health with AI"}
                 </button>
 
-                
+
               </div>
 
               {analysisResult && (
@@ -875,23 +878,113 @@ export default function TellMe() {
                 </div>
               )}
               {analysisResult && (
-                  <button
-                    className="doctor-summary-btn"
-                    onClick={generateDoctorSummary}
-                    disabled={isLoadingSummary}
-                  >
-                    {isLoadingSummary ? (
-                      <>
-                        <span className="loading-spinner"></span>
-                        Generating...
-                      </>
-                    ) : 'Generate Doctor Summary'}
-                  </button>
-                )}
+                <button
+                  className="doctor-summary-btn"
+                  onClick={generateDoctorSummary}
+                  disabled={isLoadingSummary}
+                >
+                  {isLoadingSummary ? (
+                    <>
+                      <span className="loading-spinner"></span>
+                      Generating...
+                    </>
+                  ) : 'Generate Doctor Summary'}
+                </button>
+              )}
             </div>
           </div>
         )}
       </div>
+      {/* Doctor Summary Popup */}
+      {showSummaryPopup && (
+        <div className="summary-popup-overlay">
+          <div className="summary-popup">
+            <div className="popup-header">
+              <h3>Doctor Summary</h3>
+              <button
+                className="close-popup-btn"
+                onClick={() => setShowSummaryPopup(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="popup-content">
+              <div className="summary-section">
+                <h4>Reason for Visit</h4>
+                <p>{summaryData.visit_summary.reason_for_visit}</p>
+              </div>
+
+              <div className="summary-section">
+                <h4>Key Risk Drivers</h4>
+                <ul>
+                  {summaryData.visit_summary.key_risk_drivers.map((driver, index) => (
+                    <li key={index}>{driver}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="summary-section">
+                <h4>Relevant Trends</h4>
+                <ul>
+                  {summaryData.visit_summary.relevant_trends.map((trend, index) => (
+                    <li key={index}>{trend}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="summary-section">
+                <h4>Suggested Evaluations</h4>
+                <ul>
+                  {summaryData.visit_summary.suggested_evaluations.map((item, index) => (
+                    <li key={index}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="summary-meta">
+                <p>Generated: {new Date(summaryData.generated_at).toLocaleString()}</p>
+                <p>Summary ID: {summaryData.summary_id}</p>
+              </div>
+            </div>
+
+            <div className="popup-footer">
+              <button
+                className="download-pdf-btn"
+                onClick={downloadPDF}
+              >
+                Download PDF
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {doctors.length > 0 && (
+        <div className="doctor-section">
+          <h2>Doctors Near You</h2>
+
+          {loadingDoctors && <p>Finding nearby doctors...</p>}
+
+          <div className="doctor-grid">
+            {doctors.map((doc, i) => (
+              <div key={i} className="doctor-card">
+                <h4>{doc.name}</h4>
+                <p>Type: {doc.type}</p>
+                <p>{doc.address}</p>
+                <a
+                  href={`https://www.google.com/maps?q=${doc.lat},${doc.lng}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  View on Map
+                </a>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
 
       <Footer />
     </>

@@ -430,18 +430,102 @@
   font-weight: 600;
 }
 
-.score-circle {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background: conic-gradient(#1bb6b0 85%, #e0f0f0 0);
+.score-circle-container {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  margin: 0 auto 20px;
-  font-size: 24px;
+  margin: 20px 0;
+}
+
+.score-circle {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.score-circle.low {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
+  border: 3px solid #ff3d3d;
+}
+
+.score-circle.medium {
+  background: linear-gradient(135deg, #ffd700 0%, #ffc107 100%);
+  border: 3px solid #ffb300;
+}
+
+.score-circle.high {
+  background: linear-gradient(135deg, #4caf50 0%, #8bc34a 100%);
+  border: 3px solid #45a049;
+}
+
+.score-inner {
+  width: 110px;
+  height: 110px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+
+.score-inner::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 1px dashed rgba(0, 0, 0, 0.1);
+}
+
+.score-value {
+  font-size: 32px;
   font-weight: 700;
-  color: #0f2a2a;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.score-label {
+  margin-top: 15px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #355f5f;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.score-circle.low .score-label {
+  color: #ff5252;
+}
+
+.score-circle.medium .score-label {
+  color: #ffc107;
+}
+
+.score-circle.high .score-label {
+  color: #4caf50;
+}
+
+/* Animation for score appearance */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.score-circle {
+  animation: pulse 1.5s ease-in-out;
 }
 
 .result-card ul {
