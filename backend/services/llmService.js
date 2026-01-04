@@ -4,7 +4,7 @@ const callLLM = async (prompt) => {
   const response = await axios.post(
     "https://openrouter.ai/api/v1/chat/completions",
     {
-      model: "mistralai/mistral-7b-instruct",
+      model: "mistralai/mistral-7b-instruct:free",
       messages: [
         {
           role: "system",

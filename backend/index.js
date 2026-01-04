@@ -48,6 +48,10 @@ app.use("/api/health", doctorSummaryRoutes);
 const doctorSummaryPdfRoutes = require("./routes/doctorSummaryPdfRoutes");
 app.use("/api/health", doctorSummaryPdfRoutes);
 
+const doctorRoutes = require("./routes/doctorRoutes");
+app.use("/api/doctors", doctorRoutes);
+
+
 
 
 // ===============================
