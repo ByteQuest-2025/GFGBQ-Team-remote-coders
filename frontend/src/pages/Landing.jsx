@@ -3,38 +3,55 @@ import Lottie from "lottie-react";
 import medicalAnimation from "../assets/Medical-Healthcare.json";
 import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
-import { useRef,useState } from "react"; 
+import { useRef, useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-
 
 const Landing = () => {
   const navigate = useNavigate();
   const howItWorksRef = useRef(null);
-
   const { isLoggedIn, logout } = useAuth();
   const [openMenu, setOpenMenu] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const scrollToHowItWorks = () => {
     setOpenMenu(false);
     howItWorksRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const toggleMenu = () => {
+    setOpenMenu(!openMenu);
+    if (!openMenu) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+  };
+
   return (
     <div className="landing">
       {/* NAVBAR */}
       <nav className="navbar">
-        <div className="logo">
-          SilentSense<span>AI</span>
-        </div>
-
+        {/* Hamburger on left */}
         <button
           className="nav-toggle"
           aria-label="Toggle navigation"
-          onClick={() => setOpenMenu(!openMenu)}
+          onClick={toggleMenu}
         >
           {openMenu ? '✕' : '☰'}
         </button>
 
+        {/* Centered logo (mobile only) */}
+        <div className={`logo ${windowWidth <= 1024 ? 'mobile-logo' : ''}`}>
+          SilentSense<span>AI</span>
+        </div>
+
+        {/* Desktop nav links */}
         <ul className="nav-links">
           <li onClick={() => setOpenMenu(false)}>Home</li>
           <li onClick={() => setOpenMenu(false)}>Platform</li>
@@ -43,6 +60,7 @@ const Landing = () => {
           <li onClick={() => setOpenMenu(false)}>Contact</li>
         </ul>
 
+        {/* Desktop actions */}
         <div className="nav-actions">
           {!isLoggedIn ? (
             <>
@@ -52,7 +70,6 @@ const Landing = () => {
               >
                 Login
               </button>
-
               <button
                 className="nav-signup-btn"
                 onClick={() => { setOpenMenu(false); navigate("/signup"); }}
@@ -68,7 +85,6 @@ const Landing = () => {
               >
                 Dashboard
               </button>
-
               <button
                 className="nav-signup-btn"
                 onClick={logout}
@@ -79,17 +95,61 @@ const Landing = () => {
           )}
         </div>
 
+        {/* Mobile sidebar menu */}
         <div className={`mobile-menu ${openMenu ? 'open' : ''}`} role="menu">
-          <ul>
-            <li onClick={() => setOpenMenu(false)}>Home</li>
-            <li onClick={() => setOpenMenu(false)}>Platform</li>
-            <li onClick={() => setOpenMenu(false)}>Research</li>
-            <li onClick={() => setOpenMenu(false)}>About</li>
-            <li onClick={() => setOpenMenu(false)}>Contact</li>
+          <div className="mobile-menu-header">
+            <div className="logo">
+              SilentSense<span>AI</span>
+            </div>
+            <button
+              className="mobile-close-btn"
+              onClick={toggleMenu}
+              aria-label="Close menu"
+            >
+              ✕
+            </button>
+          </div>
+
+          <ul className="mobile-nav-links">
+            <li onClick={toggleMenu}>Home</li>
+            <li onClick={toggleMenu}>Platform</li>
+            <li onClick={toggleMenu}>Research</li>
+            <li onClick={toggleMenu}>About</li>
+            <li onClick={toggleMenu}>Contact</li>
           </ul>
+
           <div className="mobile-actions">
-            <button className="nav-login-btn" onClick={() => { setOpenMenu(false); navigate('/login'); }}>Login</button>
-            <button className="nav-signup-btn" onClick={() => { setOpenMenu(false); navigate('/signup'); }}>Signup</button>
+            {!isLoggedIn ? (
+              <>
+                <button
+                  className="nav-login-btn"
+                  onClick={() => { toggleMenu(); navigate("/login"); }}
+                >
+                  Login
+                </button>
+                <button
+                  className="nav-signup-btn"
+                  onClick={() => { toggleMenu(); navigate("/signup"); }}
+                >
+                  Signup
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  className="nav-login-btn"
+                  onClick={() => { toggleMenu(); navigate("/tellme"); }}
+                >
+                  Dashboard
+                </button>
+                <button
+                  className="nav-signup-btn"
+                  onClick={() => { toggleMenu(); logout(); }}
+                >
+                  Logout
+                </button>
+              </>
+            )}
           </div>
         </div>
       </nav>
@@ -135,15 +195,17 @@ const Landing = () => {
             </div>
           </div>
 
-          {/* RIGHT */}
-          <div className="hero-animation">
-            <Lottie
-              animationData={medicalAnimation}
-              loop
-              autoplay
-              className="lottie-hero"
-            />
-          </div>
+          {/* RIGHT - Animation with responsive handling */}
+          {windowWidth > 1024 && (
+            <div className="hero-animation">
+              <Lottie
+                animationData={medicalAnimation}
+                loop
+                autoplay
+                className="lottie-hero"
+              />
+            </div>
+          )}
         </div>
       </section>
 
@@ -151,12 +213,10 @@ const Landing = () => {
       <section className="mission">
         <div className="mission-inner">
           <span className="section-tag">OUR MISSION</span>
-
           <h2>
             From Reactive Diagnosis to
             <span> Predictive Prevention</span>
           </h2>
-
           <p>
             Millions of people live with undetected health risks for years.
             SilentSenseAI exists to surface these risks early by connecting
