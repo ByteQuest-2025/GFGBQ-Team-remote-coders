@@ -6,6 +6,7 @@ import Footer from "../components/Footer";
 import { useRef,useState } from "react";
 import { useAuth } from "../context/AuthContext";
 
+
 const Landing = () => {
   const navigate = useNavigate();
   const howItWorksRef = useRef(null);

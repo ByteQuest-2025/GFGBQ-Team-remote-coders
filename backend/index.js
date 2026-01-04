@@ -39,6 +39,9 @@ app.use("/api/stress", stressRoutes);
 const sleepFamilyRoutes = require("./routes/sleepFamilyRoutes");
 app.use("/api/health", sleepFamilyRoutes);
 
+const analysisRoutes = require("./routes/analysisRoutes");
+app.use("/api/health", analysisRoutes);
+
 // ===============================
 // SERVER START
 // ===============================

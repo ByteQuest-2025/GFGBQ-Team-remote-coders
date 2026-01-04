@@ -10,6 +10,8 @@ export default function TellMe() {
   const [activeCard, setActiveCard] = useState(null);
   const [completedCards, setCompletedCards] = useState([]);
   const [showResult, setShowResult] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState("");
+  const [analyzing, setAnalyzing] = useState(false);
   const TOTAL_CARDS = 3;
 
 
@@ -18,6 +20,34 @@ export default function TellMe() {
       navigate("/login");
     }
   }, [isLoggedIn, loading, navigate]);
+
+  // Load saved state from localStorage
+  useEffect(() => {
+    const savedState = localStorage.getItem("tellme_state");
+    if (savedState) {
+      const { completedCards: savedCards, timestamp } = JSON.parse(savedState);
+      const oneDay = 24 * 60 * 60 * 1000;
+      
+      if (Date.now() - timestamp < oneDay) {
+        setCompletedCards(savedCards);
+        if (savedCards.length === TOTAL_CARDS) {
+          setShowResult(true);
+        }
+      } else {
+        localStorage.removeItem("tellme_state");
+      }
+    }
+  }, []);
+
+  // Save state to localStorage whenever completedCards changes
+  useEffect(() => {
+    if (completedCards.length > 0) {
+      localStorage.setItem("tellme_state", JSON.stringify({
+        completedCards,
+        timestamp: Date.now()
+      }));
+    }
+  }, [completedCards]);
 
   if (loading) return <div>Loading...</div>;
 
@@ -118,11 +148,6 @@ export default function TellMe() {
     });
 
     setActiveCard(null);
-
-    // If all cards are completed, show result
-    if (completedCards.length === 2) {
-      setShowResult(true);
-    }
   };
 
 
@@ -150,7 +175,26 @@ export default function TellMe() {
 
       if (!token) {
         alert("Please login again");
-        return;
+        return false;
+      }
+
+      // Validation
+      const age = Number(formData.about.age);
+      const hours = Number(formData.about.workingHours);
+
+      if (!age || age < 1 || age > 100) {
+        alert("Please enter a valid age (1-100)");
+        return false;
+      }
+
+      if (hours < 0 || hours > 24) {
+        alert("Please enter valid working hours (0-24)");
+        return false;
+      }
+
+      if (!formData.about.role || !formData.about.workMode) {
+        alert("Please select all required fields");
+        return false;
       }
 
       // 🔁 Convert checkbox array → backend boolean object
@@ -163,9 +207,9 @@ export default function TellMe() {
 
       // 🎯 Final payload (MATCHES BACKEND EXACTLY)
       const payload = {
-        age: Number(formData.about.age),
+        age: age,
         occupationType: formData.about.role,
-        workingHoursPerDay: Number(formData.about.workingHours),
+        workingHoursPerDay: hours,
         workMode: formData.about.workMode,
         recentMedicalIssues,
       };
@@ -186,16 +230,17 @@ export default function TellMe() {
 
       if (!response.ok) {
         alert(data.message || "Something went wrong");
-        return;
+        return false;
       }
 
       console.log("Profile context saved:", data);
       alert("Profile information saved successfully ✅");
 
-      setActiveCard(null); // close modal
+      return true;
     } catch (error) {
       console.error("Profile context error:", error);
       alert("Server error");
+      return false;
     }
   };
 
@@ -317,6 +362,35 @@ export default function TellMe() {
   };
 
 
+  const analyzeHealth = async () => {
+    try {
+      setAnalyzing(true);
+      const token = localStorage.getItem("token");
+      
+      const response = await fetch("http://localhost:5000/api/health/analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message || "Analysis failed");
+        return;
+      }
+
+      setAnalysisResult(data.recommendation);
+    } catch (error) {
+      console.error("Analysis error:", error);
+      alert("Failed to analyze health data");
+    } finally {
+      setAnalyzing(false);
+    }
+  };
+
   return (
     <>
       <div className="tellme-page">
@@ -388,6 +462,7 @@ export default function TellMe() {
                   <input
                     type="number"
                     min="1"
+                    max="100"
                     placeholder="Enter your age"
                     value={formData.about.age}
                     onChange={(e) => handleInputChange('about', 'age', e.target.value)}
@@ -593,26 +668,29 @@ export default function TellMe() {
               <div className="result-card">
                 <h3>Overall Health Score</h3>
                 <div className="score-circle">85%</div>
-                <p>Your overall health is good. Keep maintaining your current lifestyle.</p>
+                <p>You are doing well, but there is room for improvement in sleep consistency.</p>
               </div>
 
-              <div className="result-card">
-                <h3>Key Findings</h3>
-                <ul>
-                  <li>Your sleep patterns are generally healthy</li>
-                  <li>Mild indicators of stress detected</li>
-                  <li>No significant family history risks identified</li>
-                </ul>
+              <div className="analysis-actions">
+                <button 
+                  className="primary-btn" 
+                  onClick={analyzeHealth}
+                  disabled={analyzing}
+                >
+                  {analyzing ? "Analyzing..." : "Analyze My Health with AI"}
+                </button>
               </div>
 
-              <div className="result-card">
-                <h3>Recommendations</h3>
-                <ul>
-                  <li>Maintain your current sleep schedule</li>
-                  <li>Consider stress management techniques</li>
-                  <li>Regular check-ups recommended</li>
-                </ul>
-              </div>
+              {analysisResult && (
+                <div className="ai-recommendation">
+                  <h3>AI Health Analysis</h3>
+                  <div className="recommendation-content">
+                    {analysisResult.split('\n').map((line, i) => (
+                      <p key={i}>{line}</p>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}

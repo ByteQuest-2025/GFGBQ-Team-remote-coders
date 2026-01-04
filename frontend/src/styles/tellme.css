@@ -1,3 +1,4 @@
+/* Base styles remain the same */
 .tellme-page {
   min-height: 100vh;
   background: linear-gradient(180deg, #e8fbfb, #c7f3ea);
@@ -42,7 +43,7 @@
   line-height: 1.6;
 }
 
-/* CARDS CONTAINER */
+/* CARDS CONTAINER - Enhanced for responsiveness */
 .cards-container {
   display: flex;
   justify-content: center;
@@ -61,6 +62,10 @@
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .card:hover {
@@ -90,6 +95,7 @@
   font-size: 14px;
   color: #355f5f;
   line-height: 1.5;
+  flex-grow: 1;
 }
 
 .completed-badge {
@@ -101,40 +107,42 @@
   font-weight: 500;
 }
 
-/* MODAL STYLES */
+/* MODAL STYLES - Enhanced for responsiveness */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 42, 42, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  backdrop-filter: blur(4px);
   animation: fadeIn 0.3s ease;
+  padding: 20px;
+  overflow-y: auto; /* Added to prevent scrolling issues */
 }
 
 .modal-content {
   background: white;
-  border-radius: 20px;
-  padding: 40px;
-  width: 90%;
-  max-width: 800px;
+  width: 600px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+  padding: 40px;
+  position: relative;
   animation: slideUp 0.3s ease;
+  margin: 0 auto; /* Center the modal */
+  position: relative; /* Ensure proper positioning */
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #e0f0f0;
+  margin-bottom: 30px;
 }
 
 .modal-header h2 {
@@ -146,29 +154,24 @@
 .close-btn {
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: 28px;
+  color: #355f5f;
   cursor: pointer;
-  color: #666;
-  transition: color 0.3s ease;
-}
-
-.close-btn:hover {
-  color: #1bb6b0;
+  line-height: 1;
 }
 
 .modal-description {
-  font-size: 14px;
+  margin-bottom: 25px;
   color: #355f5f;
-  margin-bottom: 20px;
-  line-height: 1.5;
+  font-size: 15px;
 }
 
-/* FORM STYLES */
+/* FORM STYLES - Enhanced for responsiveness */
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: 1fr 1fr;
   gap: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 }
 
 .form-group {
@@ -179,49 +182,47 @@
 
 .form-group label {
   font-size: 14px;
-  color: #0f2a2a;
   font-weight: 500;
+  color: #0f2a2a;
 }
 
 .form-group input,
 .form-group select {
   padding: 12px 16px;
-  border: 1px solid rgba(27, 182, 176, 0.3);
+  border: 1px solid #e0f0f0;
   border-radius: 8px;
   font-size: 14px;
-  background: rgba(255, 255, 255, 0.8);
-  transition: all 0.3s ease;
+  color: #0f2a2a;
+  transition: all 0.2s ease;
 }
 
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
   border-color: #1bb6b0;
-  box-shadow: 0 0 0 2px rgba(27, 182, 176, 0.2);
+  box-shadow: 0 0 0 3px rgba(27, 182, 176, 0.1);
 }
 
+/* CHECKBOX GROUP */
 .checkbox-group {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 }
 
 .checkbox-group h4 {
-  font-size: 16px;
+  margin-bottom: 15px;
   color: #0f2a2a;
-  margin-bottom: 10px;
+  font-size: 16px;
 }
 
 .checkbox {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  font-size: 14px;
-  color: #0f2a2a;
+  display: block;
   position: relative;
   padding-left: 30px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #355f5f;
+  user-select: none;
 }
 
 .checkbox input {
@@ -238,14 +239,14 @@
   left: 0;
   height: 20px;
   width: 20px;
-  background-color: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(27, 182, 176, 0.3);
+  background-color: #f5fbfb;
+  border: 1px solid #d0eaea;
   border-radius: 4px;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .checkbox:hover input ~ .checkmark {
-  background-color: rgba(27, 182, 176, 0.1);
+  background-color: #e0f0f0;
 }
 
 .checkbox input:checked ~ .checkmark {
@@ -273,7 +274,7 @@
   transform: rotate(45deg);
 }
 
-/* PHQ-9 QUESTIONNAIRE STYLES */
+/* PHQ-9 QUESTIONNAIRE STYLES - Enhanced for responsiveness */
 .phq9-questions {
   display: flex;
   flex-direction: column;
@@ -306,6 +307,7 @@
   font-size: 13px;
   color: #355f5f;
   cursor: pointer;
+  min-height: 40px;
 }
 
 .radio-option input {
@@ -321,6 +323,7 @@
   border: 1px solid rgba(27, 182, 176, 0.3);
   border-radius: 50%;
   transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 .radio-option:hover .radio-mark {
@@ -357,6 +360,7 @@
   margin-top: 20px;
   padding-top: 20px;
   border-top: 1px solid #e0f0f0;
+  flex-wrap: wrap;
 }
 
 .modal-actions button {
@@ -366,6 +370,7 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
+  min-width: 100px;
 }
 
 .modal-actions .secondary {
@@ -389,11 +394,12 @@
   transform: translateY(-2px);
 }
 
-/* RESULT SECTION */
+/* RESULT SECTION - Enhanced for responsiveness */
 .result-section {
   padding: 60px 40px;
   max-width: 1200px;
   margin: 0 auto;
+  width: 100%;
 }
 
 .result-section h2 {
@@ -457,6 +463,72 @@
   left: 0;
 }
 
+/* ANALYSIS ACTIONS */
+.analysis-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+  width: 100%;
+  grid-column: 1 / -1; /* Make it span full width if inside grid */
+}
+
+.analysis-actions button {
+  padding: 12px 24px;
+  background: #1bb6b0;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.analysis-actions button:hover {
+  background: #17a09a;
+}
+
+.analysis-actions button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* AI RECOMMENDATION SECTION */
+.ai-recommendation {
+  background: #f0fdfc;
+  border: 1px solid #c7f3ea;
+  border-radius: 16px;
+  padding: 30px;
+  margin-top: 30px;
+  grid-column: 1 / -1; /* Span full width */
+  animation: fadeIn 0.5s ease;
+}
+
+.ai-recommendation h3 {
+  font-size: 22px;
+  color: #0f2a2a;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ai-recommendation h3::before {
+  content: "✨";
+  font-size: 24px;
+}
+
+.recommendation-content {
+  font-size: 16px;
+  color: #355f5f;
+  line-height: 1.8;
+}
+
+.recommendation-content p {
+  margin-bottom: 12px;
+}
+
 /* ANIMATIONS */
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -474,29 +546,337 @@
   }
 }
 
-/* RESPONSIVE DESIGN */
-@media (max-width: 768px) {
+/* COMPREHENSIVE RESPONSIVE DESIGN */
+@media (max-width: 1200px) {
+  .tellme-hero {
+    padding: 40px 8% 60px;
+  }
+
+  .tellme-hero h1 {
+    font-size: 38px;
+  }
+
   .cards-container {
-    flex-direction: column;
-    align-items: center;
-    padding: 0 20px 40px;
+    padding: 0 30px 60px;
+    gap: 25px;
+  }
+
+  .card {
+    width: 280px;
+  }
+}
+
+@media (max-width: 992px) {
+  .tellme-top {
+    padding: 20px;
+  }
+
+  .tellme-hero {
+    padding: 30px 6% 50px;
+  }
+
+  .tellme-hero h1 {
+    font-size: 34px;
+  }
+
+  .tellme-hero p {
+    font-size: 15px;
+  }
+
+  .cards-container {
+    padding: 0 20px 50px;
+    gap: 20px;
   }
 
   .card {
     width: 100%;
-    max-width: 400px;
+    max-width: 350px;
   }
 
   .modal-content {
-    padding: 30px 20px;
-    width: 95%;
+    padding: 30px;
   }
 
   .phq9-options {
     grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .radio-option {
+    font-size: 12px;
+    min-height: 35px;
+  }
+}
+
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95%;
+    padding: 20px;
+    margin: 0 10px; /* Add side margins to prevent overflow */
+    box-sizing: border-box; /* Include padding in width calculation */
+  }
+
+  /* Adjust form grid for mobile */
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  /* Adjust PHQ-9 options for mobile */
+  .phq9-options {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  /* Make radio options more touch-friendly */
+  .radio-option {
+    padding: 8px 0;
+    font-size: 13px;
+  }
+
+  /* Adjust modal actions for mobile */
+  .modal-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .modal-actions button {
+    width: 100%;
+    padding: 12px;
+  }
+  .tellme-hero {
+    padding: 25px 5% 40px;
+  }
+
+  .tellme-hero h1 {
+    font-size: 28px;
+  }
+
+  .tellme-hero p {
+    font-size: 14px;
+  }
+
+  .cards-container {
+    padding: 0 15px 40px;
+    gap: 15px;
+  }
+
+  .card {
+    padding: 20px;
+    min-height: 180px;
+  }
+
+  .card h3 {
+    font-size: 16px;
+  }
+
+  .card p {
+    font-size: 13px;
+  }
+
+  .modal-content {
+    padding: 20px;
+    width: 95%;
+  }
+
+  .modal-header h2 {
+    font-size: 20px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .phq9-options {
+    grid-template-columns: 1fr;
+  }
+
+  .radio-option {
+    font-size: 12px;
+    padding: 8px 0;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .modal-actions button {
+    width: 100%;
+  }
+
+  .result-section {
+    padding: 40px 15px;
+  }
+
+  .result-section h2 {
+    font-size: 26px;
   }
 
   .result-content {
     grid-template-columns: 1fr;
   }
+}
+
+@media (max-width: 576px) {
+  .modal-content {
+    width: calc(100% - 20px); /* Full width minus padding */
+    padding: 15px;
+    margin: 0 10px;
+  }
+
+  /* Further adjust form elements */
+  .form-group input,
+  .form-group select {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  /* Adjust checkboxes for better touch */
+  .checkbox {
+    padding-left: 25px;
+    font-size: 13px;
+  }
+
+  .checkmark {
+    height: 18px;
+    width: 18px;
+  }
+  .tellme-top button {
+    font-size: 14px;
+  }
+
+  .tellme-hero h1 {
+    font-size: 24px;
+  }
+
+  .card {
+    padding: 15px;
+    min-height: 160px;
+  }
+
+  .modal-content {
+    padding: 15px;
+  }
+
+  .form-group input,
+  .form-group select {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .phq9-question p {
+    font-size: 14px;
+  }
+
+  .result-card {
+    padding: 20px;
+  }
+
+  .score-circle {
+    width: 80px;
+    height: 80px;
+    font-size: 20px;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 400px) {
+  .modal-content {
+    width: calc(100% - 10px);
+    padding: 12px;
+    margin: 0 5px;
+  }
+
+  /* Make modal header more compact */
+  .modal-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .modal-header h2 {
+    font-size: 18px;
+  }
+
+  .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+  }
+
+  /* Adjust form labels */
+  .form-group label {
+    font-size: 13px;
+  }
+}
+
+/* Prevent body scroll when modal is open */
+body.modal-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+/* Ensure modal content doesn't overflow */
+.modal-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+  background: #1bb6b0;
+  border-radius: 10px;
+  
+  .tellme-hero {
+    padding: 20px 5% 30px;
+  }
+
+  .tellme-hero h1 {
+    font-size: 22px;
+  }
+
+  .card h3 {
+    font-size: 15px;
+  }
+
+  .card p {
+    font-size: 12px;
+  }
+
+  .modal-header h2 {
+    font-size: 18px;
+  }
+
+  .modal-description {
+    font-size: 13px;
+  }
+
+  .result-section h2 {
+    font-size: 22px;
+  }
+}
+
+/* Scrollbar styling for modal */
+.modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+  background: #1bb6b0;
+  border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: #17a09a;
 }
