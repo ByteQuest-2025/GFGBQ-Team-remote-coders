@@ -448,6 +448,18 @@ export default function TellMe() {
     }
   };
 
+  const getScoreColor = (score) => {
+  if (score < 40) return 'low';
+  if (score >= 40 && score <= 75) return 'medium';
+  return 'high';
+};
+
+const getScoreLabel = (score) => {
+  if (score < 40) return 'Needs Attention';
+  if (score >= 40 && score <= 75) return 'Fair';
+  return 'Excellent';
+};
+
   return (
     <>
       <div className="tellme-page">
@@ -724,9 +736,20 @@ export default function TellMe() {
             <div className="result-content">
               <div className="result-card">
                 <h3>Overall Health Score</h3>
-                <div className="score-circle">
+                {/* <div className="score-circle">
                   {healthScore !== null ? `${healthScore}%` : "Loading"}
-                </div>
+                </div> */}
+
+                <div className="score-circle-container">
+  <div className={`score-circle ${healthScore !== null ? getScoreColor(healthScore) : ''}`}>
+    <div className="score-inner">
+      {healthScore !== null ? `${healthScore}%` : "Loading"}
+    </div>
+  </div>
+  <div className="score-label">
+    {healthScore !== null ? getScoreLabel(healthScore) : "Calculating..."}
+  </div>
+</div>
 
                 <p>{summaryText}</p>
               </div>
