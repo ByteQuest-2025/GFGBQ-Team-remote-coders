@@ -12,6 +12,9 @@ export default function TellMe() {
   const [showResult, setShowResult] = useState(false);
   const [analysisResult, setAnalysisResult] = useState("");
   const [analyzing, setAnalyzing] = useState(false);
+  const [healthScore, setHealthScore] = useState(null);
+  const [summaryText, setSummaryText] = useState("");
+
   const TOTAL_CARDS = 3;
 
 
@@ -26,8 +29,8 @@ export default function TellMe() {
     const savedState = localStorage.getItem("tellme_state");
     if (savedState) {
       const { completedCards: savedCards, timestamp } = JSON.parse(savedState);
-      const oneDay = 24 * 60 * 60 * 1000;
-      
+      const oneDay = 0;
+
       if (Date.now() - timestamp < oneDay) {
         setCompletedCards(savedCards);
         if (savedCards.length === TOTAL_CARDS) {
@@ -366,7 +369,7 @@ export default function TellMe() {
     try {
       setAnalyzing(true);
       const token = localStorage.getItem("token");
-      
+
       const response = await fetch("http://localhost:5000/api/health/analyze", {
         method: "POST",
         headers: {
@@ -381,7 +384,10 @@ export default function TellMe() {
         alert(data.message || "Analysis failed");
         return;
       }
+      setHealthScore(data.healthScore);
+      console.log("Health score:", healthScore);
 
+      setSummaryText(data.summaryText);
       setAnalysisResult(data.recommendation);
     } catch (error) {
       console.error("Analysis error:", error);
@@ -667,13 +673,16 @@ export default function TellMe() {
             <div className="result-content">
               <div className="result-card">
                 <h3>Overall Health Score</h3>
-                <div className="score-circle">85%</div>
-                <p>You are doing well, but there is room for improvement in sleep consistency.</p>
+                <div className="score-circle">
+                  {healthScore !== null ? `${healthScore}%` : "Loading"}
+                </div>
+
+                <p>{summaryText}</p>
               </div>
 
               <div className="analysis-actions">
-                <button 
-                  className="primary-btn" 
+                <button
+                  className="primary-btn"
                   onClick={analyzeHealth}
                   disabled={analyzing}
                 >

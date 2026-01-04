@@ -1,6 +1,8 @@
 const User = require("../models/User");
 const StressAssessment = require("../models/StressAssessment");
 const SleepFamilyAssessment = require("../models/SleepFamilyAssessment");
+const { calculateHealthScore } = require("../utils/healthScoreCalculator");
+
 const OpenAI = require("openai");
 
 const openai = new OpenAI({
@@ -20,6 +22,23 @@ exports.analyzeHealth = async (req, res) => {
     if (!user || !stress || !sleepFamily) {
       return res.status(400).json({ message: "Incomplete data. Please complete all assessments first." });
     }
+
+    const healthScore = calculateHealthScore({
+      profile: user.profileContext,
+      stress,
+      sleep: sleepFamily
+    });
+
+
+    let summaryText = "Your health indicators are stable.";
+
+    if (healthScore < 80)
+      summaryText = "Some lifestyle and mental health indicators need attention.";
+
+    if (healthScore < 60)
+      summaryText = "Multiple health signals indicate elevated risk.";
+
+
 
     // 2. Prepare the prompt
     const prompt = `
@@ -62,7 +81,12 @@ exports.analyzeHealth = async (req, res) => {
 
     const recommendation = completion.choices[0].message.content;
 
-    res.json({ recommendation });
+    res.json({
+      healthScore,
+      summaryText,
+      recommendation
+    });
+
 
   } catch (error) {
     console.error("Analysis Error:", error);
