@@ -1,4 +1,4 @@
-<img width="1182" height="644" alt="image" src="https://github.com/user-attachments/assets/384e0e8e-821e-4974-a8e8-672aa5dad2f9" /># GFGBQ-Team-remote-coders
+
 Repository for remote coders - Vibe Coding Hackathon
 
 🩺 Silent Disease Early Detection Engine
