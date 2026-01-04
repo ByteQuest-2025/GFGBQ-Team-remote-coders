@@ -3,37 +3,31 @@
 
 ---
 
-## 1️⃣ **Problem Statement**
+## 1. **Problem Statement**
 
 ### **PS05 – Silent Disease Early Detection Engine**
 
 ---
 
-## 2️⃣ **Project Name**
+## 2️. **Project Name**
 
 # 🧠 **SilentSense AI**
 
 ---
 
-## 3️⃣ **Team Name**
+## 3. **Team Name**
 
 # 👨‍💻 **Remote Coders**
 
 ---
 
-## 4️⃣ **Deployed Link (Optional)**
+## 4. **2-Minute Demonstration Video**
 
-🚧 *Coming Soon*
-
+🎥 **Video link**
+  https://drive.google.com/file/d/1MQT9teYx6G0Co55P-XZkizQvHiFYZ40O/view?usp=sharing
 ---
 
-## 5️⃣ **2-Minute Demonstration Video**
-
-🎥 *Coming Soon*
-
----
-
-## 6️⃣ **PPT Link**
+## 5. **PPT Link**
 
 📑 **Project Presentation**  
 🔗 https://drive.google.com/file/d/1PsNtVbhEGqh1VGJJW3F5jrGidLadGtCF/view?usp=sharing
