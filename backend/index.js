@@ -6,7 +6,10 @@ require("dotenv").config();
 const app = express();
 
 // ✅ ENABLE CORS
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL,
+  credentials: true
+}));
 
 // ✅ BODY PARSER
 app.use(express.json());
